@@ -4,13 +4,76 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="" />
+    <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="管理系统">
+      <change afterPath="$PROJECT_DIR$/data/data.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/6001.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/6002.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/6003.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/6004.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/6005.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/7001.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/7002.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/7003.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/7004.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/images/7005.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/layui/css/layui.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.eot" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.woff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.woff2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/layui/layui.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/6001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/6002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/6003.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/6004.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/6005.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/7001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/7002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/7003.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/7004.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/7005.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont.eot" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont1.eot" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont1.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont1.woff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/iconfont1.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行更新之前于_2024_11_10_22_02_取消提交了更改_[更改]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comm/MsgParser.js" beforeDir="false" afterPath="$PROJECT_DIR$/comm/MsgParser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/async/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/async/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/iconv-lite/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/iconv-lite/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/ws/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/ws/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/xml2js/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/xml2js/package.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="GOROOT" url="file://C:/Program Files/Go" />
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/master" />
+  </component>
+  <component name="Git.Rebase.Settings">
+    <option name="NEW_BASE" value="origin/master" />
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="MIXED" />
+  </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="true" />
   </component>
@@ -18,31 +81,40 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2mFgr5GqXZW45rPcYX8BlGpPppk" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Node.js.CmdParser.js.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.cfg.js.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.main.js.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/gs-plugins&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Node.js.CmdParser.js.executor": "Run",
+    "Node.js.cfg.js.executor": "Run",
+    "Node.js.main.js.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "git-widget-placeholder": "master",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/gs-plugins",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\consoleClient\views" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="consoleClient" />
@@ -161,10 +233,47 @@
       <workItem from="1730963327073" duration="1438000" />
       <workItem from="1731214918229" duration="2506000" />
     </task>
+    <task id="LOCAL-00001" summary="管理系统">
+      <option name="closed" value="true" />
+      <created>1731247393277</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1731247393277</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="创建项目" />
+    <MESSAGE value="管理系统" />
+    <option name="LAST_COMMIT_MESSAGE" value="管理系统" />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>

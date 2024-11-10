@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <style>
+        .layui-table td, .layui-table th {
+            height: 60px; /* 设置单元格高度为50px */
+        }
+
+        .layui-table-cell{
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<!--    <h5 id="data">[{&#34;left_time_to_delete&#34;:0,&#34;char_online_state&#34;:0,&#34;trading_goods_gid&#34;:null,&#34;portrait&#34;:6005,&#34;trading_state&#34;:0,&#34;trading_appointee_name&#34;:null,&#34;trading_left_time&#34;:0,&#34;level&#34;:75,&#34;polar&#34;:5,&#34;icon&#34;:6005,&#34;trading_org_price&#34;:0,&#34;name&#34;:&#34;こ咗&#34;,&#34;gid&#34;:&#34;67260096AB64020001F9&#34;,&#34;trading_buyout_price&#34;:0,&#34;trading_cg_price_ct&#34;:0,&#34;trading_price&#34;:0,&#34;trading_sell_buy_type&#34;:0}]</h5>-->
+
+<div style="height: 2vh;"></div>
+<button id="callServerFunction" class="layui-btn layui-btn-primary layui-border-blue" >全体登录</button>
+<button id="logout" class="layui-btn layui-btn-primary layui-border-blue">全体下线</button>
+<button id="Connect" class="layui-btn layui-btn-primary layui-border-blue">获取连接数量</button>
+
+<table class="layui-table" lay-skin="nob">
+    <colgroup>
+        <col width="150">
+        <col width="150">
+        <col>
+    </colgroup>
+    <thead>
+    <tr>
+        <th>allConnect</th>
+        <th>connectAAA</th>
+        <th>connectGs</th>
+        <th>lostConnect</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td class="allConnect"></td>
+        <td class="connectAAA"></td>
+        <td class="connectGs"></td>
+        <td class="lostConnect"></td>
+    </tr>
+    </tbody>
+</table>
+
+<div style="display: flex">
+    <div style="width: 10vw">
+        <input type="number" id="myInput" lay-affix="number" placeholder="" value="1" class="layui-input">
+    </div>
+    <button id="loginNum" class="layui-btn layui-btn-primary layui-border-blue">创建客户端数</button>
+</div>
+
+<table id="ID-table-demo-data" class="layui-table" lay-skin="nob"></table>
+
+<script type="text/html" id="ID-table-demo-templet-user">
+    <img src="{{= 'images/' + d.portrait + '.png'}}" alt="" style="width: 50px;height: auto">
+</script>
+
+<script src="layui/layui.js"></script>
+<!-- 调用服务器端函数 -->
+<script>
+    let userDatas = []
+
+    // 获取按钮元素
+    const button = document.getElementById('callServerFunction');
+    button.addEventListener('click', () => {
+        // 使用 fetch API 调用服务器端的 API
+        fetch('/api/myFunction')
+            .then(response => {
+                let data = response.json()
+                data.then(res => {
+                    console.log(res)
+                    userDatas =res
+                    console.log('userDatas:',userDatas)
+                    tableInit(userDatas.userDatas)
+                })
+                // document.querySelector('#data').innerHTML = JSON.stringify(data)
+                return data
+            })
+            .then(data => {
+                console.log(data.result); // 输出 "Function called from app.js"
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    const logout = document.getElementById('logout')
+    logout.addEventListener('click',() => {
+        // 使用 fetch API 调用服务器端的 API
+        fetch('/api/logoutAll')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.result); // 输出 "Function called from app.js"
+            })
+            .catch(error => console.error('Error:', error));
+    })
+
+    const loginNum = document.getElementById('loginNum')
+    loginNum.addEventListener('click',() => {
+        const inputElement = document.getElementById('myInput');
+        const inputValue = inputElement.value;
+        console.log(inputValue);
+        fetch('/api/createClinetNum', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ value: inputValue })
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+    })
+
+    const Connect = document.getElementById('Connect')
+    Connect.addEventListener('click',()=>{
+        fetch('/api/checkConnections')
+            .then(response => {
+                let data = response.json()
+                data.then(res => {
+                    console.log(res)
+                    console.log('res:',res)
+                    document.querySelector('.allConnect').innerHTML = res.allConnect
+                    document.querySelector('.connectAAA').innerHTML = res.connectAAA
+                    document.querySelector('.connectGs').innerHTML = res.connectGs
+                    document.querySelector('.lostConnect').innerHTML = res.lostConnect
+                })
+                // document.querySelector('#data').innerHTML = JSON.stringify(data)
+                return data
+            })
+            .then(data => {
+                console.log(data.result); // 输出 "Function called from app.js"
+            })
+            .catch(error => console.error('Error:', error));
+    })
+
+    function tableInit(v) {
+        layui.use('table', function(){
+            var table = layui.table;
+            // 已知数据渲染
+            var inst = table.render({
+                elem: '#ID-table-demo-data',
+                skin: 'nob',
+                cols: [[ //标题栏
+                    {field: 'portrait', title: '头像', width: 150,templet: '#ID-table-demo-templet-user'},
+                    {field: 'name', title: '用户', width: 150},
+                    {field: 'gid', title: 'gid', minWidth: 200}
+                ]],
+                data: v,
+                // data: [{ // 赋值已知数据
+                //     "portrait": "10001",
+                //     "name": "张三1",
+                //     "gid": "男"
+                // }]
+            });
+        });
+        console.log('结束')
+    }
+
+    fetch('/api/getUserDataList')
+        .then(response => {
+            let data = response.json()
+            data.then(res => {
+                console.log(res)
+                userDatas =res
+                console.log('userDatas:',userDatas)
+                tableInit(userDatas.userDatas)
+            })
+            // document.querySelector('#data').innerHTML = JSON.stringify(data)
+            return data
+        })
+        .then(data => {
+            console.log(data.result); // 输出 "Function called from app.js"
+        })
+        .catch(error => console.error('Error:', error));
+
+</script>
+</body>
+</html>
