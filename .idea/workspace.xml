@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://C:/Program Files/Go" />
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2mFgr5GqXZW45rPcYX8BlGpPppk" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.CmdParser.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.cfg.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.main.js.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/gs-plugins&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="consoleClient" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="consoleClient" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="main.js" working-dir="$PROJECT_DIR$">
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.387" />
+        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.387" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="" />
+      <created>1726677933134</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1726677933134</updated>
+      <workItem from="1726677934193" duration="385000" />
+      <workItem from="1726678336198" duration="2226000" />
+      <workItem from="1726680576463" duration="267000" />
+      <workItem from="1726682249505" duration="323000" />
+      <workItem from="1726746632229" duration="15390000" />
+      <workItem from="1726764713046" duration="880000" />
+      <workItem from="1726807568744" duration="111000" />
+      <workItem from="1726807691743" duration="964000" />
+      <workItem from="1726824959751" duration="1168000" />
+      <workItem from="1726842717040" duration="5355000" />
+      <workItem from="1726848093666" duration="10943000" />
+      <workItem from="1726859051803" duration="2631000" />
+      <workItem from="1726928854279" duration="10996000" />
+      <workItem from="1726979727855" duration="785000" />
+      <workItem from="1727006171019" duration="1733000" />
+      <workItem from="1727007914576" duration="13095000" />
+      <workItem from="1727029939525" duration="852000" />
+      <workItem from="1727065438496" duration="126000" />
+      <workItem from="1727065595745" duration="173000" />
+      <workItem from="1727105082226" duration="3527000" />
+      <workItem from="1727112948611" duration="1942000" />
+      <workItem from="1727171683248" duration="377000" />
+      <workItem from="1727188196875" duration="396000" />
+      <workItem from="1727190645970" duration="6070000" />
+      <workItem from="1727198315030" duration="122000" />
+      <workItem from="1727200573776" duration="658000" />
+      <workItem from="1727257689298" duration="723000" />
+      <workItem from="1727278521120" duration="1505000" />
+      <workItem from="1727286108271" duration="578000" />
+      <workItem from="1727360560047" duration="2290000" />
+      <workItem from="1727372267291" duration="912000" />
+      <workItem from="1727602606473" duration="881000" />
+      <workItem from="1727618189949" duration="14087000" />
+      <workItem from="1727669238414" duration="1863000" />
+      <workItem from="1727687634590" duration="4339000" />
+      <workItem from="1727692993776" duration="24084000" />
+      <workItem from="1727730385661" duration="544000" />
+      <workItem from="1727770478336" duration="19919000" />
+      <workItem from="1727851519172" duration="12000" />
+      <workItem from="1727852545823" duration="1779000" />
+      <workItem from="1728057412231" duration="2537000" />
+      <workItem from="1728122296597" duration="161000" />
+      <workItem from="1728534168955" duration="954000" />
+      <workItem from="1728535911778" duration="287000" />
+      <workItem from="1728620639269" duration="2044000" />
+      <workItem from="1728639843582" duration="831000" />
+      <workItem from="1728640825909" duration="60000" />
+      <workItem from="1728658348599" duration="3863000" />
+      <workItem from="1728707156013" duration="2614000" />
+      <workItem from="1728750038630" duration="250000" />
+      <workItem from="1728750297443" duration="2168000" />
+      <workItem from="1728811801878" duration="363000" />
+      <workItem from="1728812303114" duration="483000" />
+      <workItem from="1728828055091" duration="117000" />
+      <workItem from="1728833585567" duration="653000" />
+      <workItem from="1728898482728" duration="1699000" />
+      <workItem from="1728907644001" duration="1652000" />
+      <workItem from="1728965189422" duration="683000" />
+      <workItem from="1728998217370" duration="1339000" />
+      <workItem from="1729052994429" duration="277000" />
+      <workItem from="1729071637845" duration="3606000" />
+      <workItem from="1729273844264" duration="70000" />
+      <workItem from="1729417171065" duration="113000" />
+      <workItem from="1729418938132" duration="1043000" />
+      <workItem from="1729421721653" duration="1122000" />
+      <workItem from="1730020114305" duration="2591000" />
+      <workItem from="1730029983895" duration="75000" />
+      <workItem from="1730032215248" duration="2977000" />
+      <workItem from="1730094025400" duration="5037000" />
+      <workItem from="1730121149408" duration="720000" />
+      <workItem from="1730177235038" duration="197000" />
+      <workItem from="1730206170928" duration="1315000" />
+      <workItem from="1730371448524" duration="638000" />
+      <workItem from="1730483063407" duration="115000" />
+      <workItem from="1730541236565" duration="4640000" />
+      <workItem from="1730963327073" duration="1438000" />
+      <workItem from="1731214918229" duration="2506000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>false</integration-enabled>
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>
