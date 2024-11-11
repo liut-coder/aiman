@@ -29,14 +29,14 @@
     loginAllClient()                : 登录
     logoutAll()                     : 所有帐号退出游戏
     exit()                          : 工具终止运行
-    receiveAllMail("新手礼包")        : 所有人 领取名字叫新手礼包的邮件
+    receiveAllMail("新手礼包")       : 所有人 领取名字叫新手礼包的邮件
     allClientBuyVip(1)              : 所有账号购买会员，：1：月卡。2：季卡，3：年卡
-    goXiangYao()
+    allXiangYao()                   : 开始降妖
     autoCombatTest(type)            : type为0表示进行自动战斗准备，type为1表示开始进行自动战斗测试。需要在DEBUG版本下导入测试文件测试，屏蔽每回合战斗时间限制。
     switchServerAll(num)            : 测试玩家换线，num 为换线次数。
     teleportTest(num)               : 测试天墉城 <-> 揽仙镇外来回切换地图，num 为执行次数。
     printAllClientStatus()          : 输出所有的连接状态
-    checkClientStatus(account)      : 检查连接状态,
+    checkClientStatus("account")    : 检查连接状态,
     checkConnections()              : 检查所有连接状态
     setDebugOn(flag)                : 打开或关闭消息打印(只对取到的第一个账号玩家进行打印) setDebugOn(false)
     sendTestCmd(testCmd)            : 发送聊天栏命令

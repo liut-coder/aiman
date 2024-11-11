@@ -20,7 +20,7 @@ module.exports = {
   tempMap: 4000, // 中转地图
   combatInterval: 2000, // 战斗回合间隔
   randomWalk: 5000, // 移动随机值
-  users_prefix: "s1s2sA", // 前缀
+  users_prefix: "s1s22sA", // 前缀
   users_index_num: 4, // 数字需要多少位
   users_start: 1, // 创建帐号的开始值
   users_end: 1,// 创建帐号的结束值

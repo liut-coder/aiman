@@ -13,7 +13,7 @@ var mgr = require("./mgr.js");
 var TestClient = require("./testclient.js");
 
 const path = require('path');
-const { userDatas,setConnect } = require('./data/data');
+const { userDatas,setConnect,getUserDatas,removeUserDatas } = require('./data/data');
 
 let allConnectData = 0
 let connectAAAData = 0
@@ -131,10 +131,13 @@ createClinet = function() {
 };
 
 // 创建所有的客户端
+let stratNum = 1
 createClinetNum = function(num) {
   var count = 0;
-  for (var i = 1; i <= num; ++i) {
-    var account = getAccountNum(i,num);
+  for (var i = stratNum; i < stratNum+Number(num); ++i) {
+    console.log('i',i,'  num',num)
+    // var account = getAccountNum(i,num);
+    var account = getAccountNum(i,stratNum+Number(num));
     console.log("create Client : " + account);
     if ("" == account) continue;
 
@@ -144,19 +147,57 @@ createClinetNum = function(num) {
     client.setAccount(account, pass);
     clients[account] = client;
     count++;
+    console.log("aaaa",num)
   }
+  stratNum = stratNum + Number(num)
 
   console.log("create Client complete totle : \n" + count);
 };
+
+//创建并登录
+createLoginClinet = function (i) {
+  var account = getAccountNum(i,1+Number(i));
+  var pass = users_pass;
+  var client = Client.create(Const.CONNECT_TYPE.NORMAL);
+  client.setAAA(cfg.host, cfg.port);
+  client.setAccount(account, pass);
+  clients[account] = client;
+  var client2 = clients[account];
+  client2.login();
+  console.log(client)
+}
 
 // 登陆所有的帐号，直接登陆，登陆失败的在Client内部自行处理
 loginAllClient = function() {
   this.loginAllTime = os.uptime();
 
   for (var key in clients) {
+    console.log(clients)
+    console.log(key)
     var client = clients[key];
     client.login();
   }
+};
+
+//单独登录
+loginAllClientNew = function(key) {
+  createClinetNum(1)
+  this.loginAllTime = os.uptime();
+  console.log(clients)
+  console.log(key)
+    var client = clients[key];
+    client.login();
+
+  var account = getAccountNum(i,stratNum+Number(num));
+  console.log("create Client : " + account);
+  // if ("" == account) continue;
+
+  var pass = users_pass;
+  var client = Client.create(Const.CONNECT_TYPE.NORMAL);
+  client.setAAA(cfg.host, cfg.port);
+  client.setAccount(account, pass);
+  clients[account] = client;
+  count++;
 };
 
 beginAutoWalkByIdx = function(mapId, x, y, idx) {
@@ -904,6 +945,7 @@ app.get('/api/loginAllClient', (req, res) => {
 app.get('/api/logoutAll', (req, res) => {
   // 调用服务器端的函数
   const result = logoutAll();
+  // removeUserDatas()
   res.json({ result });
 });
 //关闭进程
@@ -931,7 +973,10 @@ app.get('/api/checkConnections', (req, res) => {
   res.json(data);
 });
 app.get('/api/getUserDataList', (req, res) => {
-  res.json({ userDatas });
+  const data = getUserDatas()
+  console.log(data)
+  // res.json({ userDatas });
+  res.json({ 'userDatas':data });
 });
 //创建账号数量
 app.post('/api/createClinetNum', (req, res) => {
