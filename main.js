@@ -216,7 +216,7 @@ logoutAll = function() {
   }
 };
 // 去降妖
-goXiangYao = function() {
+allXiangYao = function() {
   for (var key in clients) {
     var client = clients[key];
     client.me.GoXiangYao();
@@ -877,7 +877,7 @@ mgr.init();
 
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = cfg.http_port;
 
 // 设置模板引擎为 EJS
 app.set('view engine', 'ejs');
@@ -895,32 +895,33 @@ app.get('/', (req, res) => {
 });
 
 //登录接口
-app.get('/api/myFunction', (req, res) => {
+app.get('/api/loginAllClient', (req, res) => {
   // 调用服务器端的函数
-  const result = loginAllClient();//登录  logoutAll()退出
+  const result = loginAllClient();
   res.json({ userDatas });
 });
 //退出接口
 app.get('/api/logoutAll', (req, res) => {
   // 调用服务器端的函数
-  const result = logoutAll();//退出
+  const result = logoutAll();
   res.json({ result });
 });
-//获取数据接口
-app.get('/api/getUserDataList', (req, res) => {
-  res.json({ userDatas });
-});
-//
-app.post('/api/createClinetNum', (req, res) => {
-  const requestData = req.body;
-  console.log(requestData)
-  const result = createClinetNum(Number(requestData.value));//登录  logoutAll()退出
+//关闭进程
+app.get('/api/exit', (req, res) => {
+  // 调用服务器端的函数
+  const result = exit();
   res.json({ result });
 });
-//登录数量
+//全部降妖
+app.get('/api/allXiangYao', (req, res) => {
+  // 调用服务器端的函数
+  const result = allXiangYao();
+  res.json({ result });
+});
+//获取机器人信息接口
 app.get('/api/checkConnections', (req, res) => {
   // 调用服务器端的函数
-  const result = checkConnections();//退出
+  const result = checkConnections();
   let data = {
     'allConnect':allConnectData,
     'connectAAA':connectAAAData,
@@ -928,6 +929,16 @@ app.get('/api/checkConnections', (req, res) => {
     'lostConnect':lostConnectData
   }
   res.json(data);
+});
+app.get('/api/getUserDataList', (req, res) => {
+  res.json({ userDatas });
+});
+//创建账号数量
+app.post('/api/createClinetNum', (req, res) => {
+  const requestData = req.body;
+  console.log(requestData)
+  const result = createClinetNum(Number(requestData.value));//登录  logoutAll()退出
+  res.json({ result });
 });
 
 // 启动服务器

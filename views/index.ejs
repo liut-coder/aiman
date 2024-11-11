@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <title>consoleClient</title>
     <link rel="stylesheet" href="layui/css/layui.css">
     <style>
         .layui-table td, .layui-table th {
@@ -19,25 +19,21 @@
     </style>
 </head>
 <body>
-<!--    <h5 id="data">[{&#34;left_time_to_delete&#34;:0,&#34;char_online_state&#34;:0,&#34;trading_goods_gid&#34;:null,&#34;portrait&#34;:6005,&#34;trading_state&#34;:0,&#34;trading_appointee_name&#34;:null,&#34;trading_left_time&#34;:0,&#34;level&#34;:75,&#34;polar&#34;:5,&#34;icon&#34;:6005,&#34;trading_org_price&#34;:0,&#34;name&#34;:&#34;こ咗&#34;,&#34;gid&#34;:&#34;67260096AB64020001F9&#34;,&#34;trading_buyout_price&#34;:0,&#34;trading_cg_price_ct&#34;:0,&#34;trading_price&#34;:0,&#34;trading_sell_buy_type&#34;:0}]</h5>-->
 
 <div style="height: 2vh;"></div>
-<button id="callServerFunction" class="layui-btn layui-btn-primary layui-border-blue" >全体登录</button>
-<button id="logout" class="layui-btn layui-btn-primary layui-border-blue">全体下线</button>
-<button id="Connect" class="layui-btn layui-btn-primary layui-border-blue">获取连接数量</button>
+<button id="login" class="layui-btn" >全体登录</button>
+<button id="logout" class="layui-btn">全体下线</button>
+<button id="exit" class="layui-btn">停止进程</button>
+<button id="XiangYao" class="layui-btn">全体降妖</button>
+<button id="Connect" class="layui-btn">获取连接数量</button>
 
 <table class="layui-table" lay-skin="nob">
-    <colgroup>
-        <col width="150">
-        <col width="150">
-        <col>
-    </colgroup>
     <thead>
     <tr>
-        <th>allConnect</th>
-        <th>connectAAA</th>
-        <th>connectGs</th>
-        <th>lostConnect</th>
+        <th>allConnect：</th>
+        <th>connectAAA：</th>
+        <th>connectGs：</th>
+        <th>lostConnect：</th>
     </tr>
     </thead>
     <tbody>
@@ -54,7 +50,7 @@
     <div style="width: 10vw">
         <input type="number" id="myInput" lay-affix="number" placeholder="" value="1" class="layui-input">
     </div>
-    <button id="loginNum" class="layui-btn layui-btn-primary layui-border-blue">创建客户端数</button>
+    <button id="loginNum" class="layui-btn">创建客户端数</button>
 </div>
 
 <table id="ID-table-demo-data" class="layui-table" lay-skin="nob"></table>
@@ -68,11 +64,11 @@
 <script>
     let userDatas = []
 
-    // 获取按钮元素
-    const button = document.getElementById('callServerFunction');
-    button.addEventListener('click', () => {
+    // 登录接口
+    const login = document.getElementById('login');
+    login.addEventListener('click', () => {
         // 使用 fetch API 调用服务器端的 API
-        fetch('/api/myFunction')
+        fetch('/api/loginAllClient')
             .then(response => {
                 let data = response.json()
                 data.then(res => {
@@ -89,7 +85,7 @@
             })
             .catch(error => console.error('Error:', error));
     });
-
+    // 退出接口
     const logout = document.getElementById('logout')
     logout.addEventListener('click',() => {
         // 使用 fetch API 调用服务器端的 API
@@ -100,7 +96,29 @@
             })
             .catch(error => console.error('Error:', error));
     })
-
+    // 关闭进程
+    const Stop = document.getElementById('exit')
+    Stop.addEventListener('click',() => {
+        // 使用 fetch API 调用服务器端的 API
+        fetch('/api/exit')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.result); // 输出 "Function called from app.js"
+            })
+            .catch(error => console.error('Error:', error));
+    })
+    // 全部降妖
+    const XiangYao = document.getElementById('XiangYao')
+    XiangYao.addEventListener('click',() => {
+        // 使用 fetch API 调用服务器端的 API
+        fetch('/api/allXiangYao')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.result); // 输出 "Function called from app.js"
+            })
+            .catch(error => console.error('Error:', error));
+    })
+    // 创建账号数量接口
     const loginNum = document.getElementById('loginNum')
     loginNum.addEventListener('click',() => {
         const inputElement = document.getElementById('myInput');
@@ -117,7 +135,7 @@
             .then(data => console.log(data))
             .catch(error => console.error('Error:', error));
     })
-
+    // 获取机器人信息接口
     const Connect = document.getElementById('Connect')
     Connect.addEventListener('click',()=>{
         fetch('/api/checkConnections')
@@ -131,7 +149,6 @@
                     document.querySelector('.connectGs').innerHTML = res.connectGs
                     document.querySelector('.lostConnect').innerHTML = res.lostConnect
                 })
-                // document.querySelector('#data').innerHTML = JSON.stringify(data)
                 return data
             })
             .then(data => {
@@ -148,9 +165,9 @@
                 elem: '#ID-table-demo-data',
                 skin: 'nob',
                 cols: [[ //标题栏
-                    {field: 'portrait', title: '头像', width: 150,templet: '#ID-table-demo-templet-user'},
-                    {field: 'name', title: '用户', width: 150},
-                    {field: 'gid', title: 'gid', minWidth: 200}
+                    {field: 'portrait', title: '门派', width: 150,templet: '#ID-table-demo-templet-user'},
+                    {field: 'name', title: '角色名称', width: 150},
+                    {field: 'gid', title: 'GID', minWidth: 200}
                 ]],
                 data: v,
                 // data: [{ // 赋值已知数据
@@ -172,7 +189,6 @@
                 console.log('userDatas:',userDatas)
                 tableInit(userDatas.userDatas)
             })
-            // document.querySelector('#data').innerHTML = JSON.stringify(data)
             return data
         })
         .then(data => {
