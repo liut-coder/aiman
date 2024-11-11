@@ -46,8 +46,18 @@ function Instruction(me) {
     setInterval(this.onInterval.bind(this), 30000);
     // 喊话定时
     setInterval(this.onInterval3.bind(this), 5000);
+    //setInterval(this.test.bind(this), 1000);
 }
-
+Instruction.prototype.test = function() {
+    //抽奖
+    this.me.con.sendCmd('CMD_NEW_LOTTERY_DRAW', {
+        type  : 1,
+    });
+    //活跃签到
+    this.me.con.sendCmd('CMD_SEVENDAY_GIFT_FETCH', {
+        type  : 1,
+    });
+}
 // 设置类型
 Instruction.prototype.setType = function(type) {
     if (type == this.type)

@@ -396,6 +396,12 @@ p[no.MSG_BUY_SHUADAO_RUYI_POINT] = function(ds, data) {
 p[no.CMD_SET_SHUADAO_RUYI_STATE] = function(ds, data) {
     ds.putChar(data.type)
 }
+p[no.CMD_NEW_LOTTERY_DRAW] = function(ds, data) {
+    ds.putChar(data.type)
+}
+p[no.CMD_SEVENDAY_GIFT_FETCH] = function(ds, data) {
+    ds.putChar(data.type)
+}
 p[no.CMD_SELECT_CURRENT_MOUNT] = function(ds, data) {
     ds.putLong(data.petId)
 }
