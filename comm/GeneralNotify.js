@@ -13,7 +13,6 @@ var gen_no = {
     NOTIFY_FETCH_BONUS                  : 20005,    // 领取奖励
     NOTIFY_OPEN_EXORCISM                : 20008,    // 开启驱魔香
     NOTIFY_CLOSE_EXORCISM               : 20009,    // 关闭驱魔香
-    NOTIFY_ENABLE_DOUBLE_POINTS         : 52,    //开启急急如律令
 
     NOTIFY_SUBMIT_PET                   : 30020,    // 提交宠物操作
 
@@ -26,7 +25,7 @@ var gen_no = {
     NOTIFY_CANCEL_MATCH_MEMBER          : 40025,    // 取消队员的匹配
     NOTIFY_START_MATCH_MEMBER           : 40026,    // 开始队员匹配
     NOTIFY_BUY_INSIDER                  : 50006,    //购买会员
-    NOTIFY_TEAM_ASK_REFUSE              : 30031,    //投票拒绝
+    NOTIFY_TEAM_ASK_REFUSE                  : 30031,    //投票拒绝
     NOTIFY_TEAM_ASK_AGREE               : 30030,    //投票同意
 };
 

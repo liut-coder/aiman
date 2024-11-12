@@ -45,19 +45,9 @@ function Instruction(me) {
     // 半分钟执行一次
     setInterval(this.onInterval.bind(this), 30000);
     // 喊话定时
-    setInterval(this.onInterval3.bind(this), 5000);
-    //setInterval(this.test.bind(this), 1000);
+    setInterval(this.onInterval3.bind(this), 10000);
 }
-Instruction.prototype.test = function() {
-    //抽奖
-    this.me.con.sendCmd('CMD_NEW_LOTTERY_DRAW', {
-        type  : 1,
-    });
-    //活跃签到
-    this.me.con.sendCmd('CMD_SEVENDAY_GIFT_FETCH', {
-        type  : 1,
-    });
-}
+
 // 设置类型
 Instruction.prototype.setType = function(type) {
     if (type == this.type)
@@ -123,28 +113,6 @@ Instruction.prototype.onInterval0 = function() {
         para2: ""
     });
 }
-// Instruction.prototype.onInterval3 = function() {
-//         //获取随机数
-//     var randomInt = getRandomInt(1, cfg.users_num);
-//     var i = 0;
-//     for (var key in clients) {
-//         if(i == randomInt){
-//             var client = clients[key];
-//             if(client.me.data.level>=20){{
-//                 var rondom = cfg.world_chat.split("，");
-//                 var randomHan = getRandomInt(1, rondom.length);
-//                 var msg = rondom[randomHan-1];
-//                 // 发起喊话
-//                 client.me.sendTellEx(2,msg);
-//             }}
-//
-//         }
-//
-//         i = i+1;
-//     }
-//
-//
-//     }
 Instruction.prototype.onInterval3 = function() {
     //获取随机数
     if(this.me.data.level>=70){
@@ -161,57 +129,6 @@ Instruction.prototype.onInterval3 = function() {
     }
 
 Instruction.prototype.onInterval2 = function() {
-   //关闭装备查看
-    this.me.con.sendCmd("CMD_SET_SETTING", {
-        key: "refuse_look_equip",
-        value: 1
-    });
-    // 查询帮派列表，尝试加入帮派
-    if (! this.me.data['party/name']) {
-        this.me.con.sendCmd('CMD_QUERY_PARTYS', {
-            type        : 'order',
-            para        : '-1',
-        });
-      }
-
-    // for (var idx in this.me.pets){
-    //     var val = this.me.pets[idx];
-    //     if( cfg.War_pet == val.name){
-    //         this.me.con.sendCmd("CMD_SELECT_CURRENT_PET", { id:val.id, pet_status:1 });
-    //         //宠物加点  con体质 wiz灵力 str力量 dex敏捷
-    //         this.me.con.sendCmd("CMD_SET_RECOMMEND_ATTRIB", { petId:val.id, con:0,wiz:0,str:4,dex:0 });
-    //     }
-    //     if( cfg.Ride_pet == val.name){
-    //         this.me.con.sendCmd("CMD_SELECT_CURRENT_MOUNT", { petId : val.id});
-    //     }
-    // }
-
-    // 穿戴装备
-    for (var pos in this.me.items){var val = this.me.items[pos];
-        if (! val ||val.pos < 41)
-            continue;
-        if(this.me.data.level>=70 && this.me.data.level<=73){
-            if ('暴雨梨花枪' == val.name ||'流云扇' == val.name ||'晃金锤' == val.name ||'追魂剑' == val.name ||'幽冥鬼爪' == val.name){
-                this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 1 });
-            }
-            if ('乾坤冠' == val.name ||'鱼丸冠' == val.name ){
-                this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 2 });
-            }
-            if ('八卦衣' == val.name ||'狐皮袄' == val.name ){
-                this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 3 });
-            }
-            if ('疾风履' == val.name ){
-                this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 10 });
-            }
-        }
-        //使用飞行器
-        if(this.me.data.level>=75){
-            if (cfg.equip_fly == val.name){
-                this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 40 });
-                continue;
-            }
-        }
-    }
     if(this.me.data.level>=45){
     this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
     //购买如意
@@ -227,16 +144,20 @@ Instruction.prototype.onInterval2 = function() {
 // 定时触发
 Instruction.prototype.onInterval = function() {
 
-    // var now = new Date();
-    // var hour = now.getHours(); // 获取当前小时
-    //
-    // // 检查当前时间小于10点
-    // if (hour < 10) {
-    //     // 开关未开启
-    //     return;
-    // }
-
     var taskData;
+
+    // 抽奖好礼
+    this.me.con.sendCmd('CMD_NEW_LOTTERY_DRAW', {
+        type  : 1,
+    });
+
+    // 查询帮派列表，尝试加入帮派
+    if (! this.me.data['party/name']) {
+        this.me.con.sendCmd('CMD_QUERY_PARTYS', {
+            type        : 'order',
+            para        : '-1',
+        });
+    }
 
     if (! cfg.enableAutoTask)
     {
@@ -278,26 +199,6 @@ Instruction.prototype.onInterval = function() {
 Instruction.prototype.onXiangyaoPrompt = function(data) {
     var member = this.me.teamData[this.me.data.id];
 
-        // if (this.me.data.level >= 20 && (os.uptime() - this.xyChatTime) >= 120) {
-    //     var i   = Math.floor(Math.random() * (571+434+4117));
-    //     var msg = '我是机器人';
-    //
-    //     if (i < 571) {
-    //         // 发送世界聊天
-    //         this.me.sendTellEx(2, msg);
-    //     } else
-    //     if (i < (571 + 434)) {
-    //         // 发送到帮派频道
-    //         this.me.sendTellEx(5, msg);
-    //     } else
-    //     {
-    //         // 发送到当前频道
-    //         this.me.sendTellEx(1, msg);
-    //     }
-    //
-    //     this.xyChatTime = os.uptime();
-    // }
-
     if (this.me.data.level < 45) {
         // 还不到降妖的等级，转为做主线
         this.setType(TYPE_ZHUXIAN);
@@ -324,7 +225,7 @@ Instruction.prototype.onXiangyaoPrompt = function(data) {
          2 != this.me.teamMatchData.type))
     {
         // 没有组队并且不在匹配中
-        if (Math.random() < 0.2)
+        if (Math.random() < 0.2)//十分之二得概率作为队长
         {
 
             // 以队长身份
@@ -681,9 +582,15 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
     case 20:
         // 做主线
         this.setType(TYPE_ZHUXIAN);
-
-        // 请求线路信息尝试换线
-        //this.me.con.sendCmd('CMD_REQUEST_SERVER_STATUS', { });
+        //关闭装备查看
+        this.me.con.sendCmd("CMD_SET_SETTING", {
+            key: "refuse_look_equip",
+            value: 1
+        });
+        //活跃签到
+        this.me.con.sendCmd('CMD_SEVENDAY_GIFT_FETCH', {
+            type  : 1,
+        });
         break;
     case 21:
     case 22:
@@ -699,11 +606,7 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
         this.me.con.sendCmd("CMD_SELECT_CURRENT_MOUNT", { petId : val.id});
         }
     }
-
         break;
-    // case 22:
-    //     this.me.receiveCurrentMail(cfg.mail_name)
-    //     break;
     case 23:
         this.me.receiveCurrentMail(cfg.mail_name)
         this.me.buyVip(cfg.vip_type)
@@ -717,56 +620,40 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
             });
         }
         break;
-
-    // case 69:
-    //     if (! this.me.data['party/name']) {
-    //         // 没有帮派，创建一个
-    //         this.me.con.sendCmd('CMD_CREATE_PARTY', {
-    //             name        : this.me.data.name,
-    //             announce    : this.me.data.name,
-    //         });
-    //     }
-    //     break;
     case 70:
+    case 71:
+    case 72:
+    case 73:
+    case 74:
+    case 75:
+    case 76:
         this.me.receiveCurrentMail(cfg.mail_equip)
+         for (var pos in this.me.items){var val = this.me.items[pos];
+             if (! val ||val.pos < 41)
+                 continue;
+             if(this.me.data.level>=70 && this.me.data.level<=73){
+                 if ('暴雨梨花枪' == val.name ||'流云扇' == val.name ||'晃金锤' == val.name ||'追魂剑' == val.name ||'幽冥鬼爪' == val.name){
+                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 1 });
+                 }
+                 if ('乾坤冠' == val.name ||'鱼丸冠' == val.name ){
+                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 2 });
+                 }
+                 if ('八卦衣' == val.name ||'狐皮袄' == val.name ){
+                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 3 });
+                 }
+                 if ('疾风履' == val.name ){
+                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 10 });
+                 }
+             }
+             //使用飞行器
+             if(this.me.data.level>=75){
+                 if (cfg.equip_fly == val.name){
+                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 40 });
+                     continue;
+                 }
+             }
+         }
         break;
-    // case 71:
-    // case 72:
-    //     for (var pos in this.me.items){var val = this.me.items[pos];
-    //         if (! val ||val.pos < 41)
-    //             continue;
-    //         // if(this.me.data.level>=70 && this.me.data.level<=80){
-    //             if ('暴雨梨花枪' == val.name ||'流云扇' == val.name ||'晃金锤' == val.name ||'追魂剑' == val.name ||'幽冥鬼爪' == val.name){
-    //                 this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 1 });
-    //             }
-    //             if ('乾坤冠' == val.name ||'鱼丸冠' == val.name ){
-    //                 this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 2 });
-    //             }
-    //             if ('八卦衣' == val.name ||'狐皮袄' == val.name ){
-    //                 this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 3 });
-    //             }
-    //             if ('疾风履' == val.name ){
-    //                 this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 10 });
-    //             }
-    //         }
-    //     // }
-    //     break;
-    // // case 73:
-    // // case 74:
-    //  case 75:
-    //  case 76:
-    //     for (var pos in this.me.items){var val = this.me.items[pos];
-    //         if (! val ||val.pos < 41)
-    //             continue
-    //         // if(this.me.data.level>=75){
-    //             if (cfg.equip_fly == val.name){
-    //                 this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 40 });
-    //                 continue;
-    //             }
-    //         }
-    //     // }
-    //     break;
-    //     break;
     // case 73:
     //     // 做帮派
     //     this.setType(TYPE_BANGPAI);

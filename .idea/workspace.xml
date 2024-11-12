@@ -4,14 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="单独登录函数">
+    <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="新增发包">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Instruction.js" beforeDir="false" afterPath="$PROJECT_DIR$/Instruction.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cfg.js" beforeDir="false" afterPath="$PROJECT_DIR$/cfg.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comm/CmdMsg.js" beforeDir="false" afterPath="$PROJECT_DIR$/comm/CmdMsg.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comm/CmdParser.js" beforeDir="false" afterPath="$PROJECT_DIR$/comm/CmdParser.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/comm/GeneralNotify.js" beforeDir="false" afterPath="$PROJECT_DIR$/comm/GeneralNotify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MapInfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/MapInfo.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/list.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/list.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -197,6 +194,10 @@
       <workItem from="1731214918229" duration="2506000" />
       <workItem from="1731260745352" duration="2130000" />
       <workItem from="1731301213005" duration="23821000" />
+      <workItem from="1731355277291" duration="40000" />
+      <workItem from="1731356772938" duration="555000" />
+      <workItem from="1731357362144" duration="489000" />
+      <workItem from="1731393757274" duration="466000" />
     </task>
     <task id="LOCAL-00001" summary="管理系统">
       <option name="closed" value="true" />
@@ -238,7 +239,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731348082609</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="新增发包">
+      <option name="closed" value="true" />
+      <created>1731355311958</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1731355311958</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -272,7 +281,8 @@
     <MESSAGE value="管理系统" />
     <MESSAGE value="新增" />
     <MESSAGE value="单独登录函数" />
-    <option name="LAST_COMMIT_MESSAGE" value="单独登录函数" />
+    <MESSAGE value="新增发包" />
+    <option name="LAST_COMMIT_MESSAGE" value="新增发包" />
   </component>
   <component name="VgoProject">
     <integration-enabled>false</integration-enabled>

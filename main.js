@@ -12,13 +12,6 @@ var Const = require("./Const.js");
 var mgr = require("./mgr.js");
 var TestClient = require("./testclient.js");
 
-const path = require('path');
-const { userDatas,setConnect,getUserDatas,removeUserDatas } = require('./data/data');
-
-let allConnectData = 0
-let connectAAAData = 0
-let connectGsData = 0
-let lostConnectData = 0
 // 捕捉异常
 // cyq process.on('uncaughtException', log.exception.bind(log));
 
@@ -101,13 +94,7 @@ getAccount = function(index) {
   if (users_start > index || users_end < index) {
     return "";
   }
-  return "110001" + users_prefix + prefixInteger(index, users_index_num);
-};
 
-getAccountNum = function(index,num) {
-  if (users_start > index || num < index) {
-    return "";
-  }
   return "110001" + users_prefix + prefixInteger(index, users_index_num);
 };
 
@@ -130,74 +117,14 @@ createClinet = function() {
   console.log("create Client complete totle : \n" + count);
 };
 
-// 创建所有的客户端
-let stratNum = 1
-createClinetNum = function(num) {
-  var count = 0;
-  for (var i = stratNum; i < stratNum+Number(num); ++i) {
-    console.log('i',i,'  num',num)
-    // var account = getAccountNum(i,num);
-    var account = getAccountNum(i,stratNum+Number(num));
-    console.log("create Client : " + account);
-    if ("" == account) continue;
-
-    var pass = users_pass;
-    var client = Client.create(Const.CONNECT_TYPE.NORMAL);
-    client.setAAA(cfg.host, cfg.port);
-    client.setAccount(account, pass);
-    clients[account] = client;
-    count++;
-    console.log("aaaa",num)
-  }
-  stratNum = stratNum + Number(num)
-
-  console.log("create Client complete totle : \n" + count);
-};
-
-//创建并登录
-createLoginClinet = function (i) {
-  var account = getAccountNum(i,1+Number(i));
-  var pass = users_pass;
-  var client = Client.create(Const.CONNECT_TYPE.NORMAL);
-  client.setAAA(cfg.host, cfg.port);
-  client.setAccount(account, pass);
-  clients[account] = client;
-  var client2 = clients[account];
-  client2.login();
-  console.log(client)
-}
-
 // 登陆所有的帐号，直接登陆，登陆失败的在Client内部自行处理
 loginAllClient = function() {
   this.loginAllTime = os.uptime();
 
   for (var key in clients) {
-    console.log(clients)
-    console.log(key)
     var client = clients[key];
     client.login();
   }
-};
-
-//单独登录
-loginAllClientNew = function(key) {
-  createClinetNum(1)
-  this.loginAllTime = os.uptime();
-  console.log(clients)
-  console.log(key)
-    var client = clients[key];
-    client.login();
-
-  var account = getAccountNum(i,stratNum+Number(num));
-  console.log("create Client : " + account);
-  // if ("" == account) continue;
-
-  var pass = users_pass;
-  var client = Client.create(Const.CONNECT_TYPE.NORMAL);
-  client.setAAA(cfg.host, cfg.port);
-  client.setAccount(account, pass);
-  clients[account] = client;
-  count++;
 };
 
 beginAutoWalkByIdx = function(mapId, x, y, idx) {
@@ -257,7 +184,7 @@ logoutAll = function() {
   }
 };
 // 去降妖
-allXiangYao = function() {
+goXiangYao = function() {
   for (var key in clients) {
     var client = clients[key];
     client.me.GoXiangYao();
@@ -448,10 +375,6 @@ checkConnections = function() {
   console.log("[connectAAA] " + connectAAA);
   console.log("[connectGs] " + connectGs);
   console.log("[lostConnect] " + lostConnect);
-  allConnectData = allConnect
-  connectAAAData = connectAAA
-  connectGsData = connectGs
-  lostConnectData = lostConnect
 };
 
 traceConnections = function(type) {
@@ -916,88 +839,13 @@ waitLineBuyInsider = function(num) {
 // 初始化
 mgr.init();
 
-const express = require('express');
-const app = express();
-const port = cfg.http_port;
-
-// 设置模板引擎为 EJS
-app.set('view engine', 'ejs');
-app.set('views', './views')
-app.use(express.json());
-// 设置静态文件目录
-// app.use(express.static('public'));
-app.use(express.static(path.join(__dirname, 'public')));
-
-// const { userDatas,allConnect, connectAAA,connectGs,lostConnect } = require('./data/data');
-// 定义路由
-app.get('/', (req, res) => {
-  // 渲染 views 目录下的 index.ejs 文件
-  res.render('index', { title: 'Home Page', message: JSON.stringify(userDatas) });
-});
-
-//登录接口
-app.get('/api/loginAllClient', (req, res) => {
-  // 调用服务器端的函数
-  const result = loginAllClient();
-  res.json({ userDatas });
-});
-//退出接口
-app.get('/api/logoutAll', (req, res) => {
-  // 调用服务器端的函数
-  const result = logoutAll();
-  // removeUserDatas()
-  res.json({ result });
-});
-//关闭进程
-app.get('/api/exit', (req, res) => {
-  // 调用服务器端的函数
-  const result = exit();
-  res.json({ result });
-});
-//全部降妖
-app.get('/api/allXiangYao', (req, res) => {
-  // 调用服务器端的函数
-  const result = allXiangYao();
-  res.json({ result });
-});
-//获取机器人信息接口
-app.get('/api/checkConnections', (req, res) => {
-  // 调用服务器端的函数
-  const result = checkConnections();
-  let data = {
-    'allConnect':allConnectData,
-    'connectAAA':connectAAAData,
-    'connectGs':connectGsData,
-    'lostConnect':lostConnectData
-  }
-  res.json(data);
-});
-app.get('/api/getUserDataList', (req, res) => {
-  const data = getUserDatas()
-  console.log(data)
-  // res.json({ userDatas });
-  res.json({ 'userDatas':data });
-});
-//创建账号数量
-app.post('/api/createClinetNum', (req, res) => {
-  const requestData = req.body;
-  console.log(requestData)
-  const result = createClinetNum(Number(requestData.value));//登录  logoutAll()退出
-  res.json({ result });
-});
-
-// 启动服务器
-app.listen(port, () => {
-  console.log(`访问路径： http://localhost:${port}`);
-});
-
 if (cfg.debugWsConnect) {
   var tc = TestClient.create();
   tc.run();
 } else {
   // 运行
-  // createClinet();// 创建所有的客户端
-  // loginAllClient();// 登录账号
+  createClinet();
+  loginAllClient();
 }
 
 process.on("uncaughtException", function(error) {

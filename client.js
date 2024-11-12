@@ -160,7 +160,7 @@ Client.prototype.setAAA = function(host, port) {
 };
 
 // 设置 gs 信息
-Client.prototype.setGs = function(host, port) {
+Client.prototype.setGs = function(thost, port) {
   this.gs = host;
   this.gsPort = port;
 };

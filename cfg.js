@@ -4,15 +4,14 @@ const path = require('path');
 module.exports = {
   host: "101.43.18.60",
   port: 1101,
-  http_port: 3000,
   dist: "官方问道",
   gsLines: ["官方问道1线","官方问道2线"],
   //gsLines: ["无敌内测区1线","无敌内测区2线","无敌内测区3线","无敌内测区4线","无敌内测区5线","无敌内测区6线"],103.8.69.21:3001
-  //gs   : "sy_int_gs2",        // 不配置登录服务端，配置可登录插件
+  gs   : "sy_int_gs2",        // 不配置登录服务端，配置可登录插件
   isGMAccount: 0, // 测试账号是否具有GM权限
   logPath: "./log",
   enableTrace: 0,
-  enableAutoTask: 0,   //自动任务，1开0关
+  enableAutoTask: 1,   //自动任务，1开0关
   delayAutoTask: 5000,
   debugOn: 1,  // 输出日志，1开0关
   loginType: 0, // 0表示客户端登录，1表示web登录
@@ -20,7 +19,7 @@ module.exports = {
   tempMap: 4000, // 中转地图
   combatInterval: 2000, // 战斗回合间隔
   randomWalk: 5000, // 移动随机值
-  users_prefix: "A", // 前缀
+  users_prefix: "dadadrr", // 前缀
   users_index_num: 4, // 数字需要多少位
   users_start: 1, // 创建帐号的开始值
   users_end: 1,// 创建帐号的结束值
@@ -29,10 +28,10 @@ module.exports = {
   mail_name: "新手礼包", //新手邮件
   mail_equip: "新手装备", //邮件装备
   mail_pet: "新手宠物", //邮件宠物
-  War_pet: "威威虎", //设置参战宠物名称
-  Ride_pet: "北极熊", //设置乘骑坐骑名称
+  War_pet: "无极", //设置参战宠物名称
+  Ride_pet: "无极熊", //设置乘骑坐骑名称
   equip_fly: "御天梭", //设置使用飞行法宝名称
-  vip_type :1,  //所有账号购买会员，：1：月卡。2：季卡，3：年卡
+  vip_type :3,  //所有账号购买会员，：1：月卡。2：季卡，3：年卡
   world_Team: "刷道，副本，天地，上古，万年，1030，1010，修行，除暴，伏魔，天星，试道来", //关键字进组  如果玩家喊话内容里面包含 刷道/副本等 就会触发。
   world_chat: "降妖有没有人啊半天都匹配不到，降妖拉走，降妖速度来人四等一，降妖一天拉走，刷到拉走，" +
       "刷到++++++++++++，#30刷到四缺一，刷到++++++++++++，好卡啊#67，#39，什么玩意啊，魂器怎么获得，" +

@@ -175,7 +175,6 @@ p[no.MSG_ANSWER_FIELDS] = function(data, ds) {
         gDynamicFields[ds.getShort()] = ds.getString();
     }
 }
-const { pushUserData } = require('../data/data');
 
 p[no.MSG_EXISTED_CHAR_LIST] = function(data, ds) {
     data.severState = ds.getShort();
@@ -184,7 +183,6 @@ p[no.MSG_EXISTED_CHAR_LIST] = function(data, ds) {
         var info = {};
         buildFields(info, ds);
         data[i] = info;
-        pushUserData({...info})
     }
 
     data.openServerTime = ds.getLong();
