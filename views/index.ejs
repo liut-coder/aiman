@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>consoleClient</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <style>
+        .layui-table td, .layui-table th {
+            height: 60px; /* 设置单元格高度为50px */
+        }
+
+        .layui-table-cell{
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    .connectItemTitle,
+    .connectItemContent{
+        font-size: 20px;
+    }
+    </style>
+</head>
+<body>
+
+    <div style="height: 2vh;"></div>
+    <button id="login" class="layui-btn" >全体登录</button>
+    <button id="logout" class="layui-btn">全体下线</button>
+    <button id="exit" class="layui-btn">停止进程</button>
+    <button id="XiangYao" class="layui-btn">全体降妖</button>
+    <button id="Connect" class="layui-btn">获取连接数量</button>
+
+    <div class="connect">
+        <div class="connectItem">
+            <span class="connectItemTitle">allConnect：</span>
+            &nbsp;&nbsp;
+            <span class="connectItemContent allConnect"></span>
+        </div>
+        <div class="connectItem">
+            <span class="connectItemTitle">connectAAA：</span>
+            &nbsp;&nbsp;
+            <span class="connectItemContent connectAAA"></span>
+        </div>
+        <div class="connectItem">
+          <span class="connectItemTitle">connectGs：</span>
+          &nbsp;&nbsp;
+          <span class="connectItemContent connectGs"></span>
+        </div>
+        <div class="connectItem">
+            <span class="connectItemTitle">lostConnect：</span>
+            &nbsp;&nbsp;
+            <span class="connectItemContent lostConnect"></span>
+        </div>
+    </div>
+
+    <div style="height: 2vh;"></div>
+
+    <div style="display: flex">
+        <div style="width: 10vw">
+            <input type="number" id="myInput" lay-affix="number" placeholder="" value="1" class="layui-input">
+        </div>
+        <button id="loginNum" class="layui-btn">创建客户端数</button>
+    </div>
+
+    <div>
+        <table id="ID-table-demo-data" class="layui-table" lay-skin="nob"></table>
+
+        <script type="text/html" id="ID-table-demo-templet-user">
+            <img src="{{= 'images/' + d.portrait + '.png'}}" alt="" style="width: 50px;height: auto">
+        </script>
+        <script type="text/html" id="ID-table-demo-templet-login-button">
+            <button id="loginNum" class="layui-btn loginButton">创建客户端</button>
+        </script>
+    </div>
+
+    <script src="layui/layui.js"></script>
+
+    <!-- 调用服务器端函数 -->
+    <script>
+        let userDatas = []
+
+        // 登录接口
+        const login = document.getElementById('login');
+        login.addEventListener('click', () => {
+            // 使用 fetch API 调用服务器端的 API
+            fetch('/api/loginAllClient')
+                .then(response => {
+                    let data = response.json()
+                    data.then(res => {
+                        console.log(res)
+                        userDatas =res
+                        console.log('userDatas:',userDatas)
+                        tableInit(userDatas.userDatas)
+                    })
+                    // document.querySelector('#data').innerHTML = JSON.stringify(data)
+                    return data
+                })
+                .then(data => {
+                    console.log(data.result); // 输出 "Function called from app.js"
+                })
+                .catch(error => console.error('Error:', error));
+        });
+        // 退出接口
+        const logout = document.getElementById('logout')
+        logout.addEventListener('click',() => {
+            // 使用 fetch API 调用服务器端的 API
+            fetch('/api/logoutAll')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result == undefined) return
+                    console.log(data.result); // 输出 "Function called from app.js"
+                })
+                .catch(error => console.error('Error:', error));
+        })
+        // 关闭进程
+        const Stop = document.getElementById('exit')
+        Stop.addEventListener('click',() => {
+            // 使用 fetch API 调用服务器端的 API
+            fetch('/api/exit')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.result); // 输出 "Function called from app.js"
+                })
+                .catch(error => console.error('Error:', error));
+        })
+        // 全部降妖
+        const XiangYao = document.getElementById('XiangYao')
+        XiangYao.addEventListener('click',() => {
+            // 使用 fetch API 调用服务器端的 API
+            fetch('/api/allXiangYao')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.result); // 输出 "Function called from app.js"
+                })
+                .catch(error => console.error('Error:', error));
+        })
+        // 创建账号数量接口
+        const loginNum = document.getElementById('loginNum')
+        loginNum.addEventListener('click',() => {
+            const inputElement = document.getElementById('myInput');
+            const inputValue = inputElement.value;
+            console.log(inputValue);
+            fetch('/api/createClinetNum', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ value: inputValue })
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        })
+        // 获取机器人信息接口
+        const Connect = document.getElementById('Connect')
+        Connect.addEventListener('click',()=>{
+            fetch('/api/checkConnections')
+                .then(response => {
+                    let data = response.json()
+                    data.then(res => {
+                        console.log(res)
+                        console.log('res:',res)
+                        document.querySelector('.allConnect').innerHTML = res.allConnect
+                        document.querySelector('.connectAAA').innerHTML = res.connectAAA
+                        document.querySelector('.connectGs').innerHTML = res.connectGs
+                        document.querySelector('.lostConnect').innerHTML = res.lostConnect
+                    })
+                    return data
+                })
+                .then(data => {
+                    console.log(data.result); // 输出 "Function called from app.js"
+                })
+                .catch(error => console.error('Error:', error));
+        })
+
+        function tableInit(v) {
+            layui.use('table', function(){
+                var table = layui.table;
+                // 已知数据渲染
+                var inst = table.render({
+                    elem: '#ID-table-demo-data',
+                    skin: 'nob',
+                    cols: [[ //标题栏
+    //                     {field: 'portrait', title: '门派', width: 150,templet: '#ID-table-demo-templet-user'},
+                        {field: 'account', title: '账号', width: 150},
+                        {field: 'index', title: '操作', minWidth: 100,width: 150,templet: '#ID-table-demo-templet-login-button'}
+                    ]],
+                    data: v,
+                    // data: [{ // 赋值已知数据
+                    //     "portrait": "10001",
+                    //     "name": "张三1",
+                    //     "gid": "男"
+                    // }]
+                });
+            });
+        }
+
+        fetch('/api/getUserDataList')
+            .then(response => {
+                let data = response.json()
+                data.then(res => {
+                    console.log(res)
+                    userDatas =res
+                    console.log('userDatas:',userDatas)
+                    tableInit(userDatas.userDatas)
+                })
+                return data
+            })
+            .then(data => {
+                if (data.result == undefined) return
+                console.log(data.result); // 输出 "Function called from app.js"
+            })
+            .catch(error => console.error('Error:', error));
+
+        window.onload = function() {
+            let buttonList = document.querySelectorAll('.loginButton')
+            for (let i = 0; i < buttonList.length; i++) {
+                buttonList[i].addEventListener('click', () => {
+                console.log(userDatas)
+                const jsonData = JSON.stringify(userDatas.userDatas[i])
+                console.log(jsonData)
+                // 发送请求
+                fetch('/api/createLoginClinet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: jsonData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                })
+            }
+        };
+
+    </script>
+</body>
+</html>
