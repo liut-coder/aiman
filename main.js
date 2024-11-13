@@ -972,6 +972,7 @@ app.post('/api/createLoginClinet',(req, res)=>{
   const requestData = req.body;
   console.log(requestData.account)
   createLoginClinet(requestData.account)
+  res.json({  });
 })
 
 // 启动服务器

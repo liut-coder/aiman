@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>consoleClient</title>
     <link rel="stylesheet" href="layui/css/layui.css">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap.css" rel="stylesheet">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap.rtl.css" rel="stylesheet">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap-grid.css" rel="stylesheet">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap-grid.rtl.css" rel="stylesheet">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap-reboot.css" rel="stylesheet">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap-reboot.rtl.css" rel="stylesheet">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap-utilities.css" rel="stylesheet">
+    <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap-utilities.rtl.css" rel="stylesheet">
+    <script src="bootstrap-5.3.0-alpha1-dist/js/bootstrap.bundle.js"></script>
+    <script src="bootstrap-5.3.0-alpha1-dist/js/bootstrap.esm.js"></script>
+    <script src="bootstrap-5.3.0-alpha1-dist/js/bootstrap.js"></script>
     <style>
         .layui-table td, .layui-table th {
             height: 60px; /* 设置单元格高度为50px */
@@ -22,15 +33,19 @@
         font-size: 20px;
     }
     </style>
+
+    <srcipt>
+
+    </srcipt>
 </head>
 <body>
 
     <div style="height: 2vh;"></div>
-    <button id="login" class="layui-btn" >全体登录</button>
-    <button id="logout" class="layui-btn">全体下线</button>
-    <button id="exit" class="layui-btn">停止进程</button>
-    <button id="XiangYao" class="layui-btn">全体降妖</button>
-    <button id="Connect" class="layui-btn">获取连接数量</button>
+    <button id="login" class="btn btn-primary" >全体登录</button>
+    <button id="logout" class="btn btn-primary">全体下线</button>
+    <button id="exit" class="btn btn-primary">停止进程</button>
+    <button id="XiangYao" class="btn btn-primary">全体降妖</button>
+    <button id="Connect" class="btn btn-primary">获取连接数量</button>
 
     <div class="connect">
         <div class="connectItem">
@@ -61,7 +76,7 @@
         <div style="width: 10vw">
             <input type="number" id="myInput" lay-affix="number" placeholder="" value="1" class="layui-input">
         </div>
-        <button id="loginNum" class="layui-btn">创建客户端数</button>
+        <button id="loginNum" class="btn btn-primary">创建客户端数</button>
     </div>
 
     <div>
@@ -71,7 +86,7 @@
             <img src="{{= 'images/' + d.portrait + '.png'}}" alt="" style="width: 50px;height: auto">
         </script>
         <script type="text/html" id="ID-table-demo-templet-login-button">
-            <button id="loginNum" class="layui-btn loginButton">创建客户端</button>
+            <button id="loginNum" class="btn btn-primary loginButton">创建客户端</button>
         </script>
     </div>
 
@@ -205,6 +220,7 @@
                     userDatas =res
                     console.log('userDatas:',userDatas)
                     tableInit(userDatas.userDatas)
+                    BindButton()
                 })
                 return data
             })
@@ -214,7 +230,7 @@
             })
             .catch(error => console.error('Error:', error));
 
-        window.onload = function() {
+        function BindButton() {
             let buttonList = document.querySelectorAll('.loginButton')
             for (let i = 0; i < buttonList.length; i++) {
                 buttonList[i].addEventListener('click', () => {

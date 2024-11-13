@@ -5,36 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="项目还原">
-      <change afterPath="$PROJECT_DIR$/data/data.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/list.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/6001.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/6002.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/6003.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/6004.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/6005.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/7001.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/7002.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/7003.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/7004.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/images/7005.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/layui/css/layui.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.eot" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.woff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/layui/font/iconfont.woff2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/layui/layui.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_11_10_22_02____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_11_10_22_02____.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/___.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/___.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/___1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/___1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/___2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/___2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cfg.js" beforeDir="false" afterPath="$PROJECT_DIR$/cfg.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/index.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
