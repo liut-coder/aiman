@@ -1,3 +1,4 @@
+@echo
 title test
-node main.js A 4 1 1 1234
-
+node main.js wwwgs 4 1 100 1234
+pause

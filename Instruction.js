@@ -45,7 +45,8 @@ function Instruction(me) {
     // 半分钟执行一次
     setInterval(this.onInterval.bind(this), 30000);
     // 喊话定时
-    setInterval(this.onInterval3.bind(this), 10000);
+    setInterval(this.onInterval3.bind(this), 30000);
+    // setInterval(this.test.bind(this), 1000);
 }
 
 // 设置类型
@@ -103,6 +104,28 @@ function getRandomInt(min, max) {
 //         }
 //       }
 //     }
+// Instruction.prototype.test = function() {
+//     //获取随机数
+//     for (var pos in this.me.items){var val = this.me.items[pos];
+//         if (! val ||val.pos < 41)
+//             continue;
+//         // if(this.me.data.level>=70 && this.me.data.level<=73){
+//         if ('暴雨梨花枪' == val.name ||'流云扇' == val.name ||'晃金锤' == val.name ||'追魂剑' == val.name ||'幽冥鬼爪' == val.name){
+//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 1 });
+//         }
+//         if ('乾坤冠' == val.name ||'鱼丸冠' == val.name ){
+//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 2 });
+//         }
+//         if ('八卦衣' == val.name ||'狐皮袄' == val.name ){
+//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 3 });
+//         }
+//         if ('疾风履' == val.name ){
+//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 10 });
+//         }
+//     }
+// }
+
+
 Instruction.prototype.onInterval0 = function() {
     //确认请求
     this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
@@ -147,9 +170,11 @@ Instruction.prototype.onInterval = function() {
     var taskData;
 
     // 抽奖好礼
+    if(this.me.data.level>=74){
     this.me.con.sendCmd('CMD_NEW_LOTTERY_DRAW', {
         type  : 1,
-    });
+        });
+    }
 
     // 查询帮派列表，尝试加入帮派
     if (! this.me.data['party/name']) {
@@ -611,68 +636,51 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
         this.me.receiveCurrentMail(cfg.mail_name)
         this.me.buyVip(cfg.vip_type)
         break;
-    case 65:
-        if (! this.me.data['party/name']) {
-            // 查询帮派列表，尝试加入帮派
-            this.me.con.sendCmd('CMD_QUERY_PARTYS', {
-                type        : 'order',
-                para        : '-1',
-            });
-        }
-        break;
     case 70:
     case 71:
     case 72:
     case 73:
+        //领取装备邮件
+        this.me.receiveCurrentMail(cfg.mail_equip)
+        //穿戴装备
+        for (var pos in this.me.items){var val = this.me.items[pos];
+            if (! val ||val.pos < 41)
+                continue;
+            // if(this.me.data.level>=70 && this.me.data.level<=73){
+                if ('暴雨梨花枪' == val.name ||'流云扇' == val.name ||'晃金锤' == val.name ||'追魂剑' == val.name ||'幽冥鬼爪' == val.name){
+                    this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 1 });
+                }
+                if ('乾坤冠' == val.name ||'鱼丸冠' == val.name ){
+                    this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 2 });
+                }
+                if ('八卦衣' == val.name ||'狐皮袄' == val.name ){
+                    this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 3 });
+                }
+                if ('疾风履' == val.name ){
+                    this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 10 });
+                }
+            }
+                // }
+        break;
     case 74:
     case 75:
     case 76:
-        this.me.receiveCurrentMail(cfg.mail_equip)
-         for (var pos in this.me.items){var val = this.me.items[pos];
-             if (! val ||val.pos < 41)
-                 continue;
-             if(this.me.data.level>=70 && this.me.data.level<=73){
-                 if ('暴雨梨花枪' == val.name ||'流云扇' == val.name ||'晃金锤' == val.name ||'追魂剑' == val.name ||'幽冥鬼爪' == val.name){
-                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 1 });
-                 }
-                 if ('乾坤冠' == val.name ||'鱼丸冠' == val.name ){
-                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 2 });
-                 }
-                 if ('八卦衣' == val.name ||'狐皮袄' == val.name ){
-                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 3 });
-                 }
-                 if ('疾风履' == val.name ){
-                     this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 10 });
-                 }
-             }
-             //使用飞行器
-             if(this.me.data.level>=75){
+        //使用飞行器
+        for (var pos in this.me.items){var val = this.me.items[pos];
+            if (! val ||val.pos < 41)
+                continue;
+             // if(this.me.data.level>=75){
                  if (cfg.equip_fly == val.name){
                      this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 40 });
                      continue;
                  }
              }
-         }
+         // }
         break;
-    // case 73:
-    //     // 做帮派
-    //     this.setType(TYPE_BANGPAI);
-    //     break;
-    // case 61:
-    //     // 去降妖
-    //     this.autoEquipApply();
-    //     this.setType(TYPE_XIANGYAO);
-    //     break;
 
     default:
         break;
     }
-
-    // if (newLevel >= 20 && newLevel < 25 && Math.random() < 0.2)
-    // {
-    //     // 发送世界聊天
-    //     this.me.sendChatEx('我是机器人');
-    // }
 
 }
 
