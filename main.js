@@ -15,6 +15,11 @@ var TestClient = require("./testclient.js");
 const path = require('path');
 const { userDatas,getUserDatas,pushUserData  } = require('./data/data');
 
+let allConnectData = 0
+let connectAAAData = 0
+let connectGsData = 0
+let lostConnectData = 0
+
 // 捕捉异常
 // cyq process.on('uncaughtException', log.exception.bind(log));
 
@@ -164,7 +169,6 @@ createLoginClinet = function (username) {
     return
   }
   client2.login();
-  console.log(client)
 }
 
 // 登陆所有的帐号，直接登陆，登陆失败的在Client内部自行处理
@@ -451,6 +455,11 @@ checkConnections = function() {
   console.log("[connectAAA] " + connectAAA);
   console.log("[connectGs] " + connectGs);
   console.log("[lostConnect] " + lostConnect);
+
+  allConnectData = allConnect
+  connectAAAData = connectAAA
+  connectGsData = connectGs
+  lostConnectData = lostConnect
 };
 
 traceConnections = function(type) {
