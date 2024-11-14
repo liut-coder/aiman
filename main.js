@@ -151,7 +151,7 @@ createClinetNum = function(num) {
   console.log("create Client complete totle : \n" + count);
 };
 
-//创建并登录
+//创建并登录单个账号
 createLoginClinet = function (username) {
   let account = username
   var client2 = clients[account];
@@ -175,6 +175,32 @@ loginAllClient = function() {
     var client = clients[key];
     client.login();
   }
+};
+
+// 创建并登录所有账号
+// let stratNum = 1
+createLoginAllClinetNum = function(num) {
+  var count = 0;
+  for (var i = stratNum; i < stratNum+Number(num); ++i) {
+    console.log('i',i,'  num',num)
+    // var account = getAccountNum(i,num);
+    var account = getAccountNum(i,stratNum+Number(num));
+    console.log("create Client : " + account);
+    if ("" == account) continue;
+
+    var pass = users_pass;
+    var client = Client.create(Const.CONNECT_TYPE.NORMAL);
+    client.setAAA(cfg.host, cfg.port);
+    client.setAccount(account, pass);
+    clients[account] = client;
+    count++;
+    pushUserData({account:account,index:i})
+    //登录单个账号
+    createLoginClinet(account)
+  }
+  stratNum = stratNum + Number(num)
+
+  console.log("create Client complete totle : \n" + count);
 };
 
 beginAutoWalkByIdx = function(mapId, x, y, idx) {
@@ -960,14 +986,15 @@ app.get('/api/getUserDataList', (req, res) => {
   // res.json({ userDatas });
   res.json({ 'userDatas':data });
 });
-//创建账号数量
-app.post('/api/createClinetNum', (req, res) => {
+//创建并登录所有账号
+app.post('/api/createLoginAllClinetNum', (req, res) => {
   const requestData = req.body;
   console.log(requestData)
-  const result = createClinetNum(Number(requestData.value));//登录  logoutAll()退出
-  res.json({ result });
+  // const result = createClinetNum(Number(requestData.value));//登录  logoutAll()退出
+  createLoginAllClinetNum(Number(requestData.value));//创建并登录
+  res.json({});
 });
-//创建并登录
+//创建并登录单个账号
 app.post('/api/createLoginClinet',(req, res)=>{
   const requestData = req.body;
   console.log(requestData.account)
