@@ -25,7 +25,7 @@ var gen_no = {
     NOTIFY_CANCEL_MATCH_MEMBER          : 40025,    // 取消队员的匹配
     NOTIFY_START_MATCH_MEMBER           : 40026,    // 开始队员匹配
     NOTIFY_BUY_INSIDER                  : 50006,    //购买会员
-    NOTIFY_TEAM_ASK_REFUSE                  : 30031,    //投票拒绝
+    NOTIFY_TEAM_ASK_REFUSE              : 30031,    //投票拒绝
     NOTIFY_TEAM_ASK_AGREE               : 30030,    //投票同意
 };
 

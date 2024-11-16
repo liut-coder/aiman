@@ -820,11 +820,9 @@ p[no.MSG_MAILBOX_REFRESH] = function(data, ds) {
     }
 }
 
-/*
-p[no.MSG_REPLY_ECHO] = function(data, ds) {
-    data.peer_time = ds.getLong();
-}
-*/
+// p[no.MSG_REPLY_ECHO] = function(data, ds) {
+//     data.peer_time = ds.getLong();
+// }
 
 module.exports = {
     parser : p

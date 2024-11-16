@@ -2,8 +2,8 @@
 const path = require('path');
 
 module.exports = {
-  host: "60.214.111.99",
-  port: 9999,
+  host: "101.43.18.60",
+  port: 1101,
   http_port: 3000,
   dist: "官方问道",
   gsLines: ["官方问道1线","官方问道2线"],
@@ -20,7 +20,7 @@ module.exports = {
   tempMap: 4000, // 中转地图
   combatInterval: 2000, // 战斗回合间隔
   randomWalk: 5000, // 移动随机值
-  users_prefix: "nodejsgo2", // 前缀
+  users_prefix: "A", // 前缀
   users_index_num: 4, // 数字需要多少位
   users_start: 1, // 创建帐号的开始值
   users_end: 1,// 创建帐号的结束值

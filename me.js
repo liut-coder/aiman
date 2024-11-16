@@ -2197,7 +2197,7 @@ Me.prototype.onAppear = function(msg, info) {
   } else
     if (info.type == Const.OBJECT_TYPE.CHAR) {
         // 其他玩家，如果是队员则需要跟随队长移动
-        //this.teamMemberMove(info);
+        this.teamMemberMove(info);
   }
 };
 
@@ -2208,7 +2208,7 @@ Me.prototype.onDisAppear = function(msg, info) {
     return;
 
   if (info.type == Const.OBJECT_TYPE.MONSTER || info.type == Const.OBJECT_TYPE.NPC || info.type == Const.OBJECT_TYPE.SPECIAL_NPC || info.type == Const.OBJECT_TYPE.GATHER) {
-    delete this.appearData[info.id];
+    this.appearData[info.id];
   }
 };
 

@@ -41,7 +41,7 @@ function Instruction(me) {
     //十秒
     setInterval(this.onInterval0.bind(this), 10000);
     // 半分钟执行一次
-    setInterval(this.onInterval2.bind(this), 30000);
+    // setInterval(this.onInterval2.bind(this), 30000);
     // 半分钟执行一次
     setInterval(this.onInterval.bind(this), 30000);
     // 喊话定时
@@ -105,28 +105,15 @@ function getRandomInt(min, max) {
 //       }
 //     }
 // Instruction.prototype.test = function() {
-//     //获取随机数
-//     for (var pos in this.me.items){var val = this.me.items[pos];
-//         if (! val ||val.pos < 41)
-//             continue;
-//         // if(this.me.data.level>=70 && this.me.data.level<=73){
-//         if ('暴雨梨花枪' == val.name ||'流云扇' == val.name ||'晃金锤' == val.name ||'追魂剑' == val.name ||'幽冥鬼爪' == val.name){
-//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 1 });
-//         }
-//         if ('乾坤冠' == val.name ||'鱼丸冠' == val.name ){
-//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 2 });
-//         }
-//         if ('八卦衣' == val.name ||'狐皮袄' == val.name ){
-//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 3 });
-//         }
-//         if ('疾风履' == val.name ){
-//             this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 10 });
-//         }
-//     }
+//     this.con.sendCmd("CMD_OPEN_ONLINE_MALL", {});
+//     this.con.sendCmd("CMD_BUY_FROM_ONLINE_MALL", {});
+//
 // }
 
 
 Instruction.prototype.onInterval0 = function() {
+    //请求归队
+    this.me.con.sendCmd('CMD_RETURN_TEAM', {});
     //确认请求
     this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
     //同意请求
@@ -151,30 +138,30 @@ Instruction.prototype.onInterval3 = function() {
 }
     }
 
-Instruction.prototype.onInterval2 = function() {
-    if(this.me.data.level>=45){
-    this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
-    //购买如意
-    this.me.con.sendCmd('MSG_BUY_SHUADAO_RUYI_POINT', {
-        num  : cfg.buy_ruoyi_num,
-    });
-    //打开如意
-    this.me.con.sendCmd('CMD_SET_SHUADAO_RUYI_STATE', {
-        type  : 1,
-    });
-}
-    }
+// Instruction.prototype.onInterval2 = function() {
+//     if(this.me.data.level>=45){
+//     this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
+//     //购买如意
+//     this.me.con.sendCmd('MSG_BUY_SHUADAO_RUYI_POINT', {
+//         num  : cfg.buy_ruoyi_num,
+//     });
+//     //打开如意
+//     this.me.con.sendCmd('CMD_SET_SHUADAO_RUYI_STATE', {
+//         type  : 1,
+//     });
+// }
+//     }
 // 定时触发
 Instruction.prototype.onInterval = function() {
 
     var taskData;
 
     // 抽奖好礼
-    if(this.me.data.level>=74){
-    this.me.con.sendCmd('CMD_NEW_LOTTERY_DRAW', {
-        type  : 1,
-        });
-    }
+    // if(this.me.data.level>=74){
+    // this.me.con.sendCmd('CMD_NEW_LOTTERY_DRAW', {
+    //     type  : 1,
+    //     });
+    // }
 
     // 查询帮派列表，尝试加入帮派
     if (! this.me.data['party/name']) {
@@ -262,26 +249,26 @@ Instruction.prototype.onXiangyaoPrompt = function(data) {
         return true;
     }
 
-    // var teamArr = Object.keys(this.me.teamData);
-    // if (teamArr.length < 3 &&
-    //     (! this.me.teamMatchData.lastTime ||
-    //      (os.uptime() - this.me.teamMatchData.lastTime) > 300))
-    // {
-    //     // x 分钟都还在匹配，对调一下匹配方式
-    //     if (1 != this.me.teamMatchData.state)
-    //         this.me.teamMatchMember(2);
-    //     else
-    //         this.me.teamMatchTeam(2);
-    //
-    //     return true;
-    // }
+    var teamArr = Object.keys(this.me.teamData);
+    if (teamArr.length < 3 &&
+        (! this.me.teamMatchData.lastTime ||
+         (os.uptime() - this.me.teamMatchData.lastTime) > 300))
+    {
+        // x 分钟都还在匹配，对调一下匹配方式
+        if (10 != this.me.teamMatchData.state)
+            this.me.teamMatchMember(2);
+        else
+            this.me.teamMatchTeam(2);
+
+        return true;
+    }
 
     var val = this.me.taskData[Const.TASK_NAME.XIANGYAO];
     if (! val || val.task_state != Const.TASK_STATE.S1) {
         if (member && member.index == 0) {
             if ((os.uptime() - this.xySwitchTime) >= 600) {
                 // 请求线路信息尝试换线
-                //this.me.con.sendCmd('CMD_REQUEST_SERVER_STATUS', { });
+                this.me.con.sendCmd('CMD_REQUEST_SERVER_STATUS', { });
                 this.xySwitchTime = os.uptime()
             }
             if(this.me.data.level >= 80){
@@ -637,6 +624,34 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
         this.me.buyVip(cfg.vip_type)
         break;
     case 70:
+        //购买时装
+        this.me.con.sendCmd("CMD_OPEN_ONLINE_MALL", {});
+        const options = ["R0005020", "R0005021","R0005022", "R0005023","R0005024", "R0005025","R0005026", "R0005027","R0005028", "R0005029"
+            ,"R0005030", "R0005031","R0005032", "R0005033","R0005034", "R0005035","R0005036", "R0005037","R0005038", "R0005039","R0005040", "R0005041"
+            ,"R0005042", "R0005043","R0005044", "R0005045","R0005046", "R0005047","R0005048", "R0005049"]
+        const rand_options = options[Math.floor(Math.random()*options.length)]
+        this.me.con.sendCmd("CMD_BUY_FROM_ONLINE_MALL", { id : rand_options , num : "1"});
+        //穿戴时装
+        for (var pos in this.me.items) {
+            var val = this.me.items[pos];
+            if (! val ||
+                val.pos < 41)
+                continue;
+            if (  '千秋梦' == val.name ||'汉宫秋' == val.name ||'龙吟水' == val.name ||'凤鸣空' == val.name
+                ||'峥岚衣' == val.name ||'水光衫' == val.name ||'如意年' == val.name ||'吉祥天' == val.name
+                ||'狐灵逸' == val.name ||'狐灵娇' == val.name ||'望月白' == val.name ||'霜夜雪' == val.name
+                ||'极道棋魂' == val.name ||'仙道棋心' == val.name ||'山藏海' == val.name ||'水牧云' == val.name
+                ||'射天狼' == val.name ||'策马行' == val.name ||'逍遥游' == val.name ||'彩云归' == val.name
+                ||'晓风寒' == val.name ||'兰亭晚' == val.name ||'山河万象' == val.name ||'凤鸣九霄' == val.name
+                ||'神音仙乐' == val.name ||'妙舞天律' == val.name ||'一见钟情' == val.name ||'一见倾心' == val.name
+                ||'齐天盖世' == val.name ||'齐天风华' == val.name ||'凤鸣空' == val.name ||'峥岚衣' == val.name
+            )
+            {
+                this.me.con.sendCmd('CMD_APPLY', { pos : val.pos, amount : 1 });
+            }
+        }
+        this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
+        break;
     case 71:
     case 72:
     case 73:

@@ -15,6 +15,11 @@ var TestClient = require("./testclient.js");
 const path = require('path');
 const { userDatas,getUserDatas,pushUserData  } = require('./data/data');
 
+let allConnectData = 0
+let connectAAAData = 0
+let connectGsData = 0
+let lostConnectData = 0
+
 // 捕捉异常
 // cyq process.on('uncaughtException', log.exception.bind(log));
 
@@ -151,7 +156,7 @@ createClinetNum = function(num) {
   console.log("create Client complete totle : \n" + count);
 };
 
-//创建并登录
+//创建并登录单个账号
 createLoginClinet = function (username) {
   let account = username
   var client2 = clients[account];
@@ -161,10 +166,8 @@ createLoginClinet = function (username) {
     client.setAAA(cfg.host, cfg.port);
     client.setAccount(account, pass);
     clients[account] = client;
-    return
   }
-  client2.login();
-  console.log(client)
+  clients[account].login();
 }
 
 // 登陆所有的帐号，直接登陆，登陆失败的在Client内部自行处理
@@ -175,6 +178,32 @@ loginAllClient = function() {
     var client = clients[key];
     client.login();
   }
+};
+
+// 创建并登录所有账号
+// let stratNum = 1
+createLoginAllClinetNum = function(num) {
+  var count = 0;
+  for (var i = stratNum; i < stratNum+Number(num); ++i) {
+    console.log('i',i,'  num',num)
+    // var account = getAccountNum(i,num);
+    var account = getAccountNum(i,stratNum+Number(num));
+    console.log("create Client : " + account);
+    if ("" == account) continue;
+
+    var pass = users_pass;
+    var client = Client.create(Const.CONNECT_TYPE.NORMAL);
+    client.setAAA(cfg.host, cfg.port);
+    client.setAccount(account, pass);
+    clients[account] = client;
+    count++;
+    pushUserData({account:account,index:i})
+    //登录单个账号
+    createLoginClinet(account)
+  }
+  stratNum = stratNum + Number(num)
+
+  console.log("create Client complete totle : \n" + count);
 };
 
 beginAutoWalkByIdx = function(mapId, x, y, idx) {
@@ -234,7 +263,7 @@ logoutAll = function() {
   }
 };
 // 去降妖
-goXiangYao = function() {
+allXiangYao = function() {
   for (var key in clients) {
     var client = clients[key];
     client.me.GoXiangYao();
@@ -425,6 +454,11 @@ checkConnections = function() {
   console.log("[connectAAA] " + connectAAA);
   console.log("[connectGs] " + connectGs);
   console.log("[lostConnect] " + lostConnect);
+
+  allConnectData = allConnect
+  connectAAAData = connectAAA
+  connectGsData = connectGs
+  lostConnectData = lostConnect
 };
 
 traceConnections = function(type) {
@@ -960,18 +994,20 @@ app.get('/api/getUserDataList', (req, res) => {
   // res.json({ userDatas });
   res.json({ 'userDatas':data });
 });
-//创建账号数量
-app.post('/api/createClinetNum', (req, res) => {
+//创建并登录所有账号
+app.post('/api/createLoginAllClinetNum', (req, res) => {
   const requestData = req.body;
   console.log(requestData)
-  const result = createClinetNum(Number(requestData.value));//登录  logoutAll()退出
-  res.json({ result });
+  // const result = createClinetNum(Number(requestData.value));//登录  logoutAll()退出
+  createLoginAllClinetNum(Number(requestData.value));//创建并登录
+  res.json({});
 });
-//创建并登录
+//创建并登录单个账号
 app.post('/api/createLoginClinet',(req, res)=>{
   const requestData = req.body;
   console.log(requestData.account)
   createLoginClinet(requestData.account)
+  res.json({  });
 })
 
 // 启动服务器

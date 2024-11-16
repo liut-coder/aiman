@@ -367,10 +367,10 @@ p[no.CMD_OPEN_ONLINE_MALL] = function(ds, data) {
 }
 
 p[no.CMD_BUY_FROM_ONLINE_MALL] = function(ds, data) {
-	ds.putString('C0000006')
-	ds.putShort(1)
-	ds.putString('')
-	ds.putString('gold_coin')
+    ds.putString(data.id)//编号
+    ds.putShort(data.num) //数量num
+    ds.putString('')
+    ds.putString('')
 }
 
 p[no.CMD_REQUEST_SERVER_STATUS] = function(ds, data) {

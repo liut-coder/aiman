@@ -31,7 +31,7 @@
     exit()                          : 工具终止运行
     receiveAllMail("新手礼包")        : 所有人 领取名字叫新手礼包的邮件
     allClientBuyVip(1)              : 所有账号购买会员，：1：月卡。2：季卡，3：年卡
-    goXiangYao()
+    ()
     autoCombatTest(type)            : type为0表示进行自动战斗准备，type为1表示开始进行自动战斗测试。需要在DEBUG版本下导入测试文件测试，屏蔽每回合战斗时间限制。
     switchServerAll(num)            : 测试玩家换线，num 为换线次数。
     teleportTest(num)               : 测试天墉城 <-> 揽仙镇外来回切换地图，num 为执行次数。
