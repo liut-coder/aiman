@@ -130,18 +130,25 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="mt-4">
-                    
+                    <button class="btn btn-primary loginListButton">登录列表中账号</button>
+                    <div style="height: 1.5vh"></div>
                 </div>
-                <div style="height: 60vh;overflow-y: auto">
+
+                <div style="height: 60vh;overflow-y: auto;border-radius: 10px">
                     <table id="ID-table-demo-data" class="layui-table" lay-skin="nob"></table>
                     <script type="text/html" id="ID-table-demo-templet-user">
                         <img src="{{= 'images/' + d.portrait + '.png'}}" alt="" style="width: 50px;height: auto">
                     </script>
                     <script type="text/html" id="ID-table-demo-templet-login-button">
                         <button id="loginNum" class="btn btn-primary loginButton">登录账号</button>
+                        <span>&nbsp;</span>
+                        <button id="loginNum" class="btn btn-primary logoutButton">退出登录</button>
                     </script>
                 </div>
+
+                <div style="height: 1.5vh"></div>
             </div>
         </div>
     </div>
@@ -285,7 +292,7 @@
                     cols: [[ //标题栏
     //                     {field: 'portrait', title: '门派', width: 150,templet: '#ID-table-demo-templet-user'},
                         {field: 'account', title: '账号', width: 200},
-                        {field: 'index', title: '操作', minWidth: 100, width: 150, templet: '#ID-table-demo-templet-login-button'}
+                        {field: 'index', title: '操作', minWidth: 250, width: 300, templet: '#ID-table-demo-templet-login-button'}
                     ]],
                     data: v,
                     // data: [{ // 赋值已知数据
@@ -316,6 +323,7 @@
             .catch(error => console.error('Error:', error));
 
         function BindButton() {
+            //绑定登录按钮
             let buttonList = document.querySelectorAll('.loginButton');
             for (let i = 0; i < buttonList.length; i++) {
                 buttonList[i].addEventListener('click', () => {
@@ -337,6 +345,33 @@
                     .catch((error) => {
                         console.error('Error:', error);
                     });
+                })
+            }
+            //绑定退出登录按钮
+            let logoutButtonList = document.querySelectorAll('.logoutButton');
+            for (let i = 0; i < logoutButtonList.length; i++) {
+                logoutButtonList[i].addEventListener('click', () => {
+                    console.log(userDatas)
+                    const jsonData = JSON.stringify(userDatas.userDatas[i])
+                    console.log(jsonData)
+                    // 发送单个账号退出登录请求
+                    fetch('/api/logoutSingleAccount', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: jsonData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                            if (!data.success){
+                                alert("并未存在该客户端")
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
                 })
             }
         }
@@ -397,6 +432,22 @@
         const closeButton = document.querySelector('#closeButton')
         closeButton.addEventListener('click',()=>{
             closeModel()
+        })
+
+        const loginListButton = document.querySelector('.loginListButton')
+        loginListButton.addEventListener('click',()=>{
+            fetch('/api/loginListClient', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ list: userDatas.userDatas })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => console.error('Error:', error));
         })
     </script>
 </body>

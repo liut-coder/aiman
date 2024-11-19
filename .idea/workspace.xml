@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
+    <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="项目修改">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/___.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/___1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/___2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/在变基之前未提交的更改_[更改]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/在变基之前未提交的更改_[更改]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/在变基之前未提交的更改_[更改]2/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_11_10_22_02____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_11_10_22_02____.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_11_13_17_28____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_11_13_17_28____.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_11_17_02_37____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_11_17_02_37____.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Instruction.js" beforeDir="false" afterPath="$PROJECT_DIR$/Instruction.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cfg.js" beforeDir="false" afterPath="$PROJECT_DIR$/cfg.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/list.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/list.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.bat" beforeDir="false" afterPath="$PROJECT_DIR$/test.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/index.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -23,7 +18,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="GOROOT" url="file://C:/Program Files/Go" />
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../Program Files/Go" />
   <component name="Git.Merge.Settings">
     <option name="BRANCH" value="origin/master" />
   </component>
@@ -63,11 +58,12 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/gs-plugins&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/LENOVO&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -110,8 +106,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.20224.387" />
-        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-IU-242.20224.387" />
+        <option value="bundled-gosdk-33c477a475b1-b97fc8a1e17c-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-241.14494.238" />
+        <option value="bundled-js-predefined-1d06a55b98c1-74d2a5396914-JavaScript-GO-241.14494.238" />
       </set>
     </attachedChunks>
   </component>

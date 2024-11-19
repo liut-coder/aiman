@@ -180,6 +180,13 @@ loginAllClient = function() {
   }
 };
 
+//登录列表中的所有账号
+loginListClient = function (list) {
+  list.forEach((item) => {
+    createLoginClinet(item.account)
+  })
+}
+
 // 创建并登录所有账号
 // let stratNum = 1
 createLoginAllClinetNum = function(num) {
@@ -262,6 +269,17 @@ logoutAll = function() {
     client.logout();
   }
 };
+
+//退出指定账号
+logoutSingleAccount = function(account) {
+  var client = clients[account];
+  if (!client){
+    return false
+  }
+  client.logout();
+  return true
+}
+
 // 去降妖
 allXiangYao = function() {
   for (var key in clients) {
@@ -990,7 +1008,6 @@ app.get('/api/checkConnections', (req, res) => {
 });
 app.get('/api/getUserDataList', (req, res) => {
   const data = getUserDatas()
-  console.log(data)
   // res.json({ userDatas });
   res.json({ 'userDatas':data });
 });
@@ -1008,6 +1025,19 @@ app.post('/api/createLoginClinet',(req, res)=>{
   console.log(requestData.account)
   createLoginClinet(requestData.account)
   res.json({  });
+})
+//登录列表中的所有账号
+app.post('/api/loginListClient', async (req, res) => {
+  const requestData = req.body;
+  console.log(requestData.list)
+  await loginListClient(requestData.list);
+  res.join({})
+})
+//退出指定账号
+app.post('/api/logoutSingleAccount',async (req, res)=>{
+  const requestData = req.body;
+  const ok = await logoutSingleAccount(requestData.account)
+  res.json({ 'success': ok });
 })
 
 // 启动服务器
