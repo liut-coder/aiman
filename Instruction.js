@@ -88,29 +88,6 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// 定时触发
-// Instruction.prototype.wabao = function() {
-//     for (var pos in this.me.items) {
-//         var val = this.me.items[pos];
-//         if (! val ||
-//             val.pos < 41)
-//             continue;
-//
-//         if ('超级藏宝图' == val.name)
-//         {
-//             // 使用道具
-//             this.me.con.sendCmd('CMD_APPLY', { pos : val.pos, amount : 1 });
-//             continue;
-//         }
-//       }
-//     }
-// Instruction.prototype.test = function() {
-//     this.con.sendCmd("CMD_OPEN_ONLINE_MALL", {});
-//     this.con.sendCmd("CMD_BUY_FROM_ONLINE_MALL", {});
-//
-// }
-
-
 Instruction.prototype.onInterval0 = function() {
     //请求归队
     this.me.con.sendCmd('CMD_RETURN_TEAM', {});
@@ -623,7 +600,7 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
         this.me.receiveCurrentMail(cfg.mail_name)
         this.me.buyVip(cfg.vip_type)
         break;
-    case 70:
+    case 68:
         //购买时装
         this.me.con.sendCmd("CMD_OPEN_ONLINE_MALL", {});
         const options = ["R0005020", "R0005021","R0005022", "R0005023","R0005024", "R0005025","R0005026", "R0005027","R0005028", "R0005029"
@@ -631,6 +608,8 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
             ,"R0005042", "R0005043","R0005044", "R0005045","R0005046", "R0005047","R0005048", "R0005049"]
         const rand_options = options[Math.floor(Math.random()*options.length)]
         this.me.con.sendCmd("CMD_BUY_FROM_ONLINE_MALL", { id : rand_options , num : "1"});
+        break;
+    case 70:
         //穿戴时装
         for (var pos in this.me.items) {
             var val = this.me.items[pos];
@@ -648,9 +627,10 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
             )
             {
                 this.me.con.sendCmd('CMD_APPLY', { pos : val.pos, amount : 1 });
+                this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
+                continue;
             }
         }
-        this.me.con.sendCmd("CMD_CONFIRM_RESULT", { result: "1" });
         break;
     case 71:
     case 72:
