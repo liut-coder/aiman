@@ -89,6 +89,7 @@
                     <button id="createClient" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createClientModal">
                         创建客户端
                     </button>
+                    <button class="btn btn-primary loginListButton">列表登录</button>
                 </div>
                 <!-- 连接数量 -->
                 <div class="row">
@@ -134,10 +135,7 @@
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <button class="btn btn-primary loginListButton">登录列表中账号</button>
-                    <div style="height: 1.5vh"></div>
-                </div>
+
 
                 <div>
                     <table id="ID-table-demo-data" class="layui-table" lay-skin="nob"></table>
@@ -148,6 +146,9 @@
                         <button id="loginNum" class="btn btn-primary loginButton">登录账号</button>
                         <span>&nbsp;</span>
                         <button id="loginNum" class="btn btn-primary logoutButton">退出登录</button>
+                    </script>
+                    <script type="text/html" id="ID-table-demo-templet-aaa">
+                        {{=d.aaa}}
                     </script>
                 </div>
 
@@ -282,8 +283,11 @@
 
         setInterval(()=>{
             checkConnections()
-        },10000)
+            // getUserDataListFn()
+            // tableInit(userDatas.userDatas)
+        },1000)
         checkConnections()
+        getUserDataListFn()
 
         function tableInit(v) {
             layui.use('table', function() {
@@ -292,11 +296,14 @@
                 var inst = table.render({
                     elem: '#ID-table-demo-data',
                     skin: 'nob',
-                    height: 500,
+                    height: 450,
                     cols: [[ //标题栏
     //                     {field: 'portrait', title: '门派', width: 150,templet: '#ID-table-demo-templet-user'},
                         {field: 'account', title: '账号', width: 200},
+                        {field: 'aaa', title: 'AAA连接状态', minWidth: 100, width: 300, templet: '#ID-table-demo-templet-aaa'},
+                        {field: 'gs', title: 'GS连接状态', minWidth: 100, width: 300, templet: '#ID-table-demo-templet-gs'},
                         {field: 'index', title: '操作', minWidth: 250, width: 300, templet: '#ID-table-demo-templet-login-button'}
+
                     ]],
                     data: v,
                     // data: [{ // 赋值已知数据
@@ -308,23 +315,26 @@
             });
         }
 
-        fetch('/api/getUserDataList')
-            .then(response => {
-                let data = response.json()
-                data.then(res => {
-                    console.log(res)
-                    userDatas =res
-                    console.log('userDatas:',userDatas)
-                    tableInit(userDatas.userDatas)
-                    BindButton()
+        function getUserDataListFn() {
+            fetch('/api/getUserDataList')
+                .then(response => {
+                    let data = response.json()
+                    data.then(res => {
+                        console.log(res)
+                        userDatas =res
+                        console.log('userDatas:',userDatas)
+                        tableInit(userDatas.userDatas)
+                        BindButton()
+                    })
+                    return data
                 })
-                return data
-            })
-            .then(data => {
-                if (data.result == undefined) return
-                console.log(data.result); // 输出 "Function called from app.js"
-            })
-            .catch(error => console.error('Error:', error));
+                .then(data => {
+                    if (data.result == undefined) return
+                    console.log(data.result); // 输出 "Function called from app.js"
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
 
         function BindButton() {
             //绑定登录按钮
@@ -345,6 +355,7 @@
                     .then(response => response.json())
                     .then(data => {
                         console.log('Success:', data);
+                        getUserDataListFn()
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -371,6 +382,8 @@
                             console.log('Success:', data);
                             if (!data.success){
                                 alert("并未存在该客户端")
+                            }else {
+                                getUserDataListFn()
                             }
                         })
                         .catch((error) => {

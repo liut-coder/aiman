@@ -13,7 +13,11 @@ var mgr = require("./mgr.js");
 var TestClient = require("./testclient.js");
 
 const path = require('path');
-const { userDatas,getUserDatas,pushUserData  } = require('./data/data');
+const {
+  userDatas,
+  getUserDatas,pushUserData,
+  writeUserData,
+} = require('./data/data');
 
 let allConnectData = 0
 let connectAAAData = 0
@@ -149,7 +153,14 @@ createClinetNum = function(num) {
     client.setAccount(account, pass);
     clients[account] = client;
     count++;
-    pushUserData({account:account,index:i})
+    //获取状态
+    const status = checkClientStatusObject(account)
+    pushUserData({
+      account: account,
+      index: i,
+      aaa: status.aaa,
+      gs: status.gs
+    })
   }
   stratNum = stratNum + Number(num)
 
@@ -204,7 +215,15 @@ createLoginAllClinetNum = function(num) {
     client.setAccount(account, pass);
     clients[account] = client;
     count++;
-    pushUserData({account:account,index:i})
+    //获取状态
+    const status = checkClientStatusObject(account)
+    // pushUserData({account:account,index:i})
+    pushUserData({
+      account: account,
+      index: i,
+      aaa: status.aaa,
+      gs: status.gs
+    })
     //登录单个账号
     createLoginClinet(account)
   }
@@ -468,10 +487,10 @@ checkConnections = function() {
     }
   }
 
-  console.log("[allConnect] " + allConnect);
-  console.log("[connectAAA] " + connectAAA);
-  console.log("[connectGs] " + connectGs);
-  console.log("[lostConnect] " + lostConnect);
+  // console.log("[allConnect] " + allConnect);
+  // console.log("[connectAAA] " + connectAAA);
+  // console.log("[connectGs] " + connectGs);
+  // console.log("[lostConnect] " + lostConnect);
 
   allConnectData = allConnect
   connectAAAData = connectAAA
@@ -511,6 +530,36 @@ checkClientStatus = function(account) {
 
   if (client.getGs()) console.log("[" + account + "] gs connected !");
   else console.log("[" + account + "] gs not connected !");
+};
+
+// 获取账号连接状态
+checkClientStatusObject = function(account) {
+  var client = clients[account];
+  if (null == client) {
+    console.log("[" + account + "] client not exit !");
+    return;
+  }
+
+  let obj = {aaa: '',gs: ''}
+
+  if (client.getAAA()) {
+    // console.log("[" + account + "] aaa connected !")
+    obj.aaa = '已连接';
+  }
+  else {
+    // console.log("[" + account + "] aaa not connected !");
+    obj.aaa = '未连接';
+  }
+
+  if (client.getGs()) {
+    // console.log("[" + account + "] gs connected !");
+    obj.gs = '连接';
+  }
+  else {
+    // console.log("[" + account + "] gs not connected !");
+    obj.gs = '未连接';
+  }
+  return obj
 };
 
 // 输出所有的连接
@@ -1009,6 +1058,18 @@ app.get('/api/checkConnections', (req, res) => {
 app.get('/api/getUserDataList', (req, res) => {
   const data = getUserDatas()
   // res.json({ userDatas });
+  console.log(data)
+  data.forEach((item)=>{
+    let obj = checkClientStatusObject(item.account)
+    if (obj === undefined) {
+      item.aaa = '不存在该连接'
+      item.gs = '不存在该连接'
+    }else {
+      item.aaa = obj.aaa
+      item.gs = obj.gs
+    }
+  })
+  writeUserData(data)
   res.json({ 'userDatas':data });
 });
 //创建并登录所有账号

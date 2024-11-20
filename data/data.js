@@ -55,9 +55,25 @@ function removeUserDatas() {
     }
 }
 
+//覆盖json文件的内容
+function writeUserData(list) {
+    if (typeof list != "object"){
+        console.error("类型不是object")
+    }
+    removeUserDatas()
+    //写入文件
+    const jsonString = JSON.stringify(list,null,2)
+    try {
+        fs.writeFileSync(fileName,jsonString)
+    }catch (err){
+        console.log("数据存储错误",err)
+    }
+}
+
 module.exports = {
     userDatas,
     getUserDatas,
     removeUserDatas,
-    pushUserData
+    pushUserData,
+    writeUserData
 }
