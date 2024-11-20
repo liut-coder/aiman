@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8dca7f17-8120-49c4-b0a4-ceb6affcc931" name="更改" comment="项目修改">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_11_10_22_02____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_11_10_22_02____.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_11_13_17_28____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_11_13_17_28____.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2024_11_17_02_37____.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/_2024_11_17_02_37____.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/list.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/list.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/index.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -321,7 +316,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="origin/master" />
                       </list>
                     </value>
                   </entry>
