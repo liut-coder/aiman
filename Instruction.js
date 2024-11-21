@@ -25,6 +25,13 @@ var TYPE_TRANSFORM  = {
     'xiangyao'  : TYPE_ZHUXIAN,
 };
 
+//根据key读取config
+getConfig = (key) => {
+    let val = cfg.db.get(key).value()
+    console.log(val);
+    return val
+}
+
 function Instruction(me) {
     if (! (this instanceof Instruction))
         return new Instruction(me);
@@ -105,7 +112,8 @@ Instruction.prototype.onInterval3 = function() {
     if(this.me.data.level>=70){
     var randomInt = getRandomInt(1, cfg.users_end);
     if(randomInt <=1){//n个人说话
-        var rondom = cfg.world_chat.split("，");
+        // var rondom = cfg.world_chat.split("，");
+        var rondom = getConfig(world_chat).split("，");
         var randomHan = getRandomInt(1, rondom.length);
         var msg = rondom[randomHan-1];
         // 发起喊话
@@ -583,22 +591,26 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
         break;
     case 21:
     case 22:
-        this.me.receiveCurrentMail(cfg.mail_pet)
+        this.me.receiveCurrentMail(getConfig('mail_pet'))
         for (var idx in this.me.pets){
         var val = this.me.pets[idx];
-        if( cfg.War_pet == val.name){
+        // if( cfg.War_pet == val.name){
+        if( getConfig('War_pet') == val.name){
         this.me.con.sendCmd("CMD_SELECT_CURRENT_PET", { id:val.id, pet_status:1 });
         //宠物加点  con体质 wiz灵力 str力量 dex敏捷 自动加点选择
         this.me.con.sendCmd("CMD_SET_RECOMMEND_ATTRIB", { petId:val.id, con:0,wiz:0,str:4,dex:0 });
         }
-        if(cfg.Ride_pet == val.name){
+        // if(cfg.Ride_pet == val.name){
+        if(getConfig('Ride_pet') == val.name){
         this.me.con.sendCmd("CMD_SELECT_CURRENT_MOUNT", { petId : val.id});
         }
     }
         break;
     case 23:
-        this.me.receiveCurrentMail(cfg.mail_name)
-        this.me.buyVip(cfg.vip_type)
+        // this.me.receiveCurrentMail(cfg.mail_name)
+        this.me.receiveCurrentMail(getConfig('mail_name'))
+        // this.me.buyVip(cfg.vip_type)
+        this.me.buyVip(getConfig('vip_type'))
         break;
     case 68:
         //购买时装
@@ -636,7 +648,8 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
     case 72:
     case 73:
         //领取装备邮件
-        this.me.receiveCurrentMail(cfg.mail_equip)
+        // this.me.receiveCurrentMail(cfg.mail_equip)
+        this.me.receiveCurrentMail(getConfig('mail_equip'))
         //穿戴装备
         for (var pos in this.me.items){var val = this.me.items[pos];
             if (! val ||val.pos < 41)
@@ -665,7 +678,7 @@ Instruction.prototype.onLevelUp = function(oldLevel, newLevel) {
             if (! val ||val.pos < 41)
                 continue;
              // if(this.me.data.level>=75){
-                 if (cfg.equip_fly == val.name){
+                 if (getConfig('equip_fly') == val.name){
                      this.me.con.sendCmd('CMD_EQUIP', { pos : val.pos, equip_part : 40 });
                      continue;
                  }

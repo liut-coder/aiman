@@ -17,6 +17,12 @@ var mgr = require("./mgr.js");
 var SEND_MOVE_CMD_INTERVAL = 1000;
 var MAX_MOVE_STEP = 10;
 
+//根据key读取config
+getConfig = (key) => {
+  let val = cfg.db.get(key).value()
+  console.log(val);
+  return val
+}
 function Me(connection) {
   if (!(this instanceof Me)) return new Me(connection);
 
@@ -2510,7 +2516,8 @@ Me.prototype.onMessageEx = function(msg, msgData) {
   }
 
 
-  var arr = cfg.world_Team.split('，');
+  // var arr = cfg.world_Team.split('，');
+  var arr = getConfig('world_Team').split('，');
 
 
   var flag = arr.some(function(element) {
@@ -2518,7 +2525,8 @@ Me.prototype.onMessageEx = function(msg, msgData) {
   });
 //this.me.data.level
 
-  if (cfg.world_Team.includes(msgData.msg) || flag ) {
+  // if (cfg.world_Team.includes(msgData.msg) || flag ) {
+  if (getConfig('world_Team').includes(msgData.msg) || flag ) {
     for (var key in clients) {
       var client =clients[key];
       if(client.me.data.level >=70){

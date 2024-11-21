@@ -1,5 +1,9 @@
 ﻿const fs = require('fs');
 const path = require('path');
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+const adapter = new FileSync('./config/config.json');
+const db = low(adapter);
 
 module.exports = {
   host: "101.43.18.60",
@@ -61,7 +65,7 @@ module.exports = {
       "兄弟们武魂几层了，这武魂怎么计算的，怎么带不了魂器啊，怎么玩，小白，求带", //随机喊话
   buy_ruoyi_num: 1, //单次购买如意数量
 
-
+  db,
 
   // 摆摊相关
   inventoryPosBegin: 41, // 背包起始位置

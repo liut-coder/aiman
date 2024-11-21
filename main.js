@@ -27,15 +27,73 @@ let lostConnectData = 0
 // 捕捉异常
 // cyq process.on('uncaughtException', log.exception.bind(log));
 
+//批量写入config
+setConfigObj = (updates) => {
+  // 应用更新
+  for (const key in updates) {
+    cfg.db.set(key, updates[key]).write();
+  }
+}
+
+//写入config
+setConfig = (key,value) => {
+  cfg.db.set(key, value).write();
+}
+
+//根据key读取config
+getConfig = (key) => {
+  let val = cfg.db.get(key).value()
+  // console.log(val);
+  return val
+}
+
+//获取全部配置config
+getConfigAll = () => {
+  let val = cfg.db.read()
+  // console.log(val);
+  return val
+}
+
+//将配置信息写入config.json
+setConfigObj({
+  "users_prefix": cfg.users_prefix,
+  "users_index_num": cfg.users_index_num,
+  "users_pass": cfg.users_pass,
+  "mail_name": cfg.mail_name,
+  "mail_equip": cfg.mail_equip,
+  "mail_pet": cfg.mail_pet,
+  "War_pet": cfg.War_pet,
+  "Ride_pet": cfg.Ride_pet,
+  "equip_fly": cfg.equip_fly,
+  "vip_type": cfg.vip_type,
+  "world_Team": cfg.world_Team,
+  "world_chat": cfg.world_chat,
+  "prompt": [
+    "前缀",
+    "数字需要多少位",
+    "机器人帐号的密码",
+    "新手邮件",
+    "邮件装备",
+    "邮件宠物",
+    "设置参战宠物名称",
+    "设置乘骑坐骑名称",
+    "设置使用飞行法宝名称",
+    "所有账号购买会员类型，：1：月卡。2：季卡，3：年卡",
+    "组队喊话关键词",
+    "自动喊话词"
+  ],
+})
+
 // account --> Client
 clients = {};
 cfg.loadNames();
 
-users_prefix = cfg.users_prefix;
-users_index_num = cfg.users_index_num;
+// users_prefix = cfg.users_prefix;
+users_prefix = getConfig("users_prefix");
+users_index_num = getConfig('users_index_num');
 users_start = cfg.users_start;
 users_end = cfg.users_end;
-users_pass = cfg.users_pass;
+users_pass = getConfig('users_pass');
 
 stallStat = {}; // 测试摆摊统计信息
 goldStallStat = {}; // 金元宝交易统计信息
@@ -45,13 +103,15 @@ tradingStat = {}; // 聚宝斋系统统计信息
 if (null != process.argv[2]) {
   users_prefix = process.argv[2];
 } else {
-  users_prefix = cfg.users_prefix;
+  // users_prefix = cfg.users_prefix;
+  users_prefix = getConfig("users_prefix");
 }
 
 if (null != process.argv[3]) {
   users_index_num = parseInt(process.argv[3]);
 } else {
-  users_index_num = cfg.users_index_num;
+  // users_index_num = cfg.users_index_num;
+  users_index_num = getConfig('users_index_num');
 }
 
 if (null != process.argv[4]) {
@@ -69,7 +129,8 @@ if (null != process.argv[5]) {
 if (null != process.argv[6]) {
   users_pass = process.argv[6];
 } else {
-  users_pass = cfg.users_pass;
+  // users_pass = cfg.users_pass;
+  users_pass = getConfig('users_pass');
 }
 
 // 给数字前补0
@@ -107,14 +168,16 @@ getAccount = function(index) {
     return "";
   }
 
-  return "110001" + users_prefix + prefixInteger(index, users_index_num);
+  // return "110001" + users_prefix + prefixInteger(index, users_index_num);
+  return "110001" + getConfig("users_prefix") + prefixInteger(index, getConfig('users_index_num'));
 };
 
 getAccountNum = function(index,num) {
   if (users_start > index || num < index) {
     return "";
   }
-  return "110001" + users_prefix + prefixInteger(index, users_index_num);
+  // return "110001" + users_prefix + prefixInteger(index, users_index_num);
+  return "110001" + getConfig("users_prefix") + prefixInteger(index, getConfig('users_index_num'));
 };
 
 // 创建所有的客户端
@@ -125,7 +188,8 @@ createClinet = function() {
     console.log("create Client : " + account);
     if ("" == account) continue;
 
-    var pass = users_pass;
+    // var pass = users_pass;
+    var pass = getConfig('users_pass');
     var client = Client.create(Const.CONNECT_TYPE.NORMAL);
     client.setAAA(cfg.host, cfg.port);
     client.setAccount(account, pass);
@@ -147,7 +211,8 @@ createClinetNum = function(num) {
     console.log("create Client : " + account);
     if ("" == account) continue;
 
-    var pass = users_pass;
+    // var pass = users_pass;
+    var pass = getConfig('users_pass');
     var client = Client.create(Const.CONNECT_TYPE.NORMAL);
     client.setAAA(cfg.host, cfg.port);
     client.setAccount(account, pass);
@@ -172,7 +237,8 @@ createLoginClinet = function (username) {
   let account = username
   var client2 = clients[account];
   if (client2 == undefined){
-    var pass = users_pass;
+    // var pass = users_pass;
+    var pass = getConfig('users_pass');
     var client = Client.create(Const.CONNECT_TYPE.NORMAL);
     client.setAAA(cfg.host, cfg.port);
     client.setAccount(account, pass);
@@ -209,7 +275,8 @@ createLoginAllClinetNum = function(num) {
     console.log("create Client : " + account);
     if ("" == account) continue;
 
-    var pass = users_pass;
+    // var pass = users_pass;
+    var pass = getConfig('users_pass');
     var client = Client.create(Const.CONNECT_TYPE.NORMAL);
     client.setAAA(cfg.host, cfg.port);
     client.setAccount(account, pass);
@@ -1013,9 +1080,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // const { userDatas,allConnect, connectAAA,connectGs,lostConnect } = require('./data/data');
 // 定义路由
-app.get('/', (req, res) => {
+app.get('/home', (req, res) => {
   // 渲染 views 目录下的 index.ejs 文件
   res.render('index', { title: 'Home Page', message: JSON.stringify(userDatas) });
+});
+app.get('/config', (req, res) => {
+  // 渲染 views 目录下的 index.ejs 文件
+  res.render('configView', { title: 'Home Page', message: JSON.stringify(userDatas) });
 });
 
 //登录接口
@@ -1100,7 +1171,18 @@ app.post('/api/logoutSingleAccount',async (req, res)=>{
   const ok = await logoutSingleAccount(requestData.account)
   res.json({ 'success': ok });
 })
-
+//获取配置信息
+app.get('/api/getConfig',(req, res)=>{
+  const data = getConfigAll()
+  res.json(data);
+})
+//更新配置信息
+app.post('/api/updateConfig',(req, res)=>{
+  const requestData = req.body;
+  // console.log(requestData);
+  setConfig(requestData.field,requestData.value)
+  res.json({});
+})
 // 启动服务器
 app.listen(port, () => {
   console.log(`访问路径： http://localhost:${port}`);
