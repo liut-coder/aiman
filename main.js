@@ -35,6 +35,15 @@ setConfigObj = (updates) => {
   }
 }
 
+// 只初始化缺失配置，避免每次启动覆盖后台修改的配置
+setDefaultConfigObj = (defaults) => {
+  for (const key in defaults) {
+    if (cfg.db.get(key).value() === undefined) {
+      cfg.db.set(key, defaults[key]).write();
+    }
+  }
+}
+
 //写入config
 setConfig = (key,value) => {
   cfg.db.set(key, value).write();
@@ -54,8 +63,8 @@ getConfigAll = () => {
   return val
 }
 
-//将配置信息写入config.json
-setConfigObj({
+//将默认配置信息写入config.json
+setDefaultConfigObj({
   "users_prefix": cfg.users_prefix,
   "users_index_num": cfg.users_index_num,
   "users_pass": cfg.users_pass,
@@ -69,16 +78,16 @@ setConfigObj({
   "world_Team": cfg.world_Team,
   "world_chat": cfg.world_chat,
   "prompt": [
-    "前缀",
-    "数字需要多少位",
-    "机器人帐号的密码",
-    "新手邮件",
-    "邮件装备",
-    "邮件宠物",
+    "帐号前缀",
+    "帐号位数",
+    "帐号的密码",
+    "经验邮件名称",
+    "装备邮件名称",
+    "宠物邮件名称",
     "设置参战宠物名称",
     "设置乘骑坐骑名称",
     "设置使用飞行法宝名称",
-    "所有账号购买会员类型，：1：月卡。2：季卡，3：年卡",
+    "购买会员类型，：1：月卡。2：季卡，3：年卡",
     "组队喊话关键词",
     "自动喊话词"
   ],
@@ -1185,7 +1194,7 @@ app.post('/api/updateConfig',(req, res)=>{
 })
 // 启动服务器
 app.listen(port, () => {
-  console.log(`访问路径： http://localhost:${port}`);
+  console.log(`访问路径： http://localhost:${port}/home`);
 });
 
 process.on("uncaughtException", function(error) {

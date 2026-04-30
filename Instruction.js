@@ -28,7 +28,6 @@ var TYPE_TRANSFORM  = {
 //根据key读取config
 getConfig = (key) => {
     let val = cfg.db.get(key).value()
-    console.log(val);
     return val
 }
 
@@ -110,18 +109,23 @@ Instruction.prototype.onInterval0 = function() {
 Instruction.prototype.onInterval3 = function() {
     //获取随机数
     if(this.me.data.level>=70){
-    var randomInt = getRandomInt(1, cfg.users_end);
-    if(randomInt <=1){//n个人说话
-        // var rondom = cfg.world_chat.split("，");
-        var rondom = getConfig(world_chat).split("，");
-        var randomHan = getRandomInt(1, rondom.length);
-        var msg = rondom[randomHan-1];
-        // 发起喊话
-        this.me.sendTellEx(2,msg);
-    }
+        var randomInt = getRandomInt(1, cfg.users_end);
+        if(randomInt <=1){//n个人说话
+            var worldChat = getConfig('world_chat') || cfg.world_chat || '';
+            var rondom = worldChat.split(/[，,]/).filter(function(item) {
+                return item && item.trim();
+            });
+            if (!rondom.length) {
+                return;
+            }
+            var randomHan = getRandomInt(1, rondom.length);
+            var msg = rondom[randomHan-1].trim();
+            // 发起喊话
+            this.me.sendTellEx(2,msg);
+        }
 
-}
     }
+}
 
 // Instruction.prototype.onInterval2 = function() {
 //     if(this.me.data.level>=45){

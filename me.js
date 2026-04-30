@@ -20,7 +20,6 @@ var MAX_MOVE_STEP = 10;
 //根据key读取config
 getConfig = (key) => {
   let val = cfg.db.get(key).value()
-  console.log(val);
   return val
 }
 function Me(connection) {
@@ -2516,25 +2515,38 @@ Me.prototype.onMessageEx = function(msg, msgData) {
   }
 
 
-  // var arr = cfg.world_Team.split('，');
-  var arr = getConfig('world_Team').split('，');
+  if (msgData.channel != 2 || !msgData.msg || !msgData.id || !msgData.name) {
+    return;
+  }
 
+  var worldTeam = getConfig('world_Team') || cfg.world_Team || '';
+  var arr = worldTeam.split(/[，,]/).map(function(element) {
+    return element.trim();
+  }).filter(function(element) {
+    return element.length > 0;
+  });
 
   var flag = arr.some(function(element) {
     return msgData.msg.includes(element)
   });
 //this.me.data.level
 
-  // if (cfg.world_Team.includes(msgData.msg) || flag ) {
-  if (getConfig('world_Team').includes(msgData.msg) || flag ) {
+  if (flag) {
+    if (cfg.debugOn) {
+      console.log("[world team] " + msgData.name + ": " + msgData.msg);
+    }
+
     for (var key in clients) {
       var client =clients[key];
-      if(client.me.data.level >=70){
+      if(client.me.data.id != msgData.id && client.me.data.level >=70){
         //随机
-        var random =  getRandomInt(1,cfg.users_end);
+        var random =  getRandomInt(1,20);
         //总数20，挑 10个
         //2分之1的 概率申请
-        if(random < 10){
+        if(random <= 10){
+          if (cfg.debugOn) {
+            console.log("[world team] request_join " + client.me.data.name + " -> " + msgData.name);
+          }
           client.me.sendCmd("CMD_REQUEST_JOIN", {
             peer_name: msgData.name,
             id: msgData.id,
