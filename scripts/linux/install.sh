@@ -66,7 +66,7 @@ disable_conflicting_debian_source_files() {
       continue
     fi
 
-    if grep -Eq 'deb\.debian\.org|security\.debian\.org|archive\.debian\.org|debian-security' "${file}"; then
+    if grep -Eq 'deb\.debian\.org|security\.debian\.org|archive\.debian\.org|download\.docker\.com|debian-security' "${file}"; then
       ${SUDO} mv "${file}" "${file}.disabled-by-aiman"
     fi
   done
@@ -139,7 +139,40 @@ ensure_base_packages() {
   fi
 
   run_apt_update
-  ${SUDO} apt-get install -y curl tar ca-certificates
+  ${SUDO} apt-get install -y curl tar ca-certificates gnupg lsb-release
+}
+
+ensure_supported_docker_debian() {
+  if ! is_debian_system; then
+    return
+  fi
+
+  codename="$(detect_debian_codename || true)"
+  case "${codename}" in
+    bullseye|bookworm|trixie)
+      return
+      ;;
+    stretch|buster)
+      echo "当前 Debian 版本 ${codename} 过旧，Docker 官方仓库已不再支持。" >&2
+      echo "建议先升级到 Debian 11+，再执行一键脚本。" >&2
+      exit 1
+      ;;
+  esac
+}
+
+install_docker_from_official_repo() {
+  codename="$1"
+
+  ${SUDO} mkdir -p /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/debian/gpg | ${SUDO} gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  ${SUDO} chmod a+r /etc/apt/keyrings/docker.gpg
+
+  cat <<EOF | ${SUDO} tee /etc/apt/sources.list.d/docker.list >/dev/null
+deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian ${codename} stable
+EOF
+
+  ${SUDO} apt-get update
+  ${SUDO} apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 }
 
 ensure_docker_stack() {
@@ -153,7 +186,14 @@ ensure_docker_stack() {
   fi
 
   run_apt_update
-  ${SUDO} apt-get install -y docker.io docker-compose || ${SUDO} apt-get install -y docker.io
+  ensure_supported_docker_debian
+
+  if is_debian_system; then
+    codename="$(detect_debian_codename)"
+    install_docker_from_official_repo "${codename}"
+  else
+    ${SUDO} apt-get install -y docker.io docker-compose || ${SUDO} apt-get install -y docker.io
+  fi
 
   if need_cmd systemctl; then
     ${SUDO} systemctl enable --now docker || true
