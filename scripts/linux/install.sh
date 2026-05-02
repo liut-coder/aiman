@@ -261,10 +261,10 @@ cd "${TARGET_DIR}"
 chmod +x ./scripts/linux/*.sh
 
 echo "Deploying in ${TARGET_DIR}"
-sh ./scripts/linux/deploy.sh
+bash ./scripts/linux/deploy.sh
 
 echo
 echo "Done."
 echo "Project dir: ${TARGET_DIR}"
-echo "Status: sh ./scripts/linux/status.sh"
-echo "Logs:   sh ./scripts/linux/logs.sh"
+echo "Status: bash ./scripts/linux/status.sh"
+echo "Logs:   bash ./scripts/linux/logs.sh"
