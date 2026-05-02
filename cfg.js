@@ -29,6 +29,7 @@ module.exports = {
   users_start: 1, // 创建帐号的开始值
   users_end: 1,// 创建帐号的结束值
   users_pass: "123456", // 机器人帐号的密码
+  instance_lock_enabled: 0, // 多实例账号归属锁，1开0关
   mail_name: "新手礼包", //新手邮件
   mail_equip: "新手装备", //邮件装备
   mail_pet: "新手宠物", //邮件宠物
@@ -120,15 +121,26 @@ module.exports = {
 
   loadNames: function() {
     try {
-      let maleRawData = fs.readFileSync(path.join(__dirname, 'male_names.json'));
+      let maleRawData = fs.readFileSync(path.join(__dirname, 'male_names.json'), 'utf8');
       this.maleNames = JSON.parse(maleRawData);
 
-      let femaleRawData = fs.readFileSync(path.join(__dirname, 'female_names.json'));
+      let femaleRawData = fs.readFileSync(path.join(__dirname, 'female_names.json'), 'utf8');
       this.femaleNames = JSON.parse(femaleRawData);
+
+      let randomNameRawData = fs.readFileSync(path.join(__dirname, 'name.json'), 'utf8');
+      let randomNameJson = JSON.parse(randomNameRawData);
+      let randomNameText = Array.isArray(randomNameJson)
+        ? randomNameJson.join("")
+        : String(randomNameJson || "");
+      let randomNameChars = randomNameText.match(/[\u4e00-\u9fff]/g) || [];
+      this.charNameChars = Array.from(new Set(randomNameChars));
 
       console.log("初始化角色名称列表");
     } catch (error) {
       console.error("读取名字文件出错:", error);
+      this.maleNames = this.maleNames || [];
+      this.femaleNames = this.femaleNames || [];
+      this.charNameChars = this.charNameChars || [];
     }
   },
 

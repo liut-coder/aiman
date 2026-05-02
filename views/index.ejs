@@ -1,525 +1,1734 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首页</title>
-    <link rel="stylesheet" href="../layui/css/layui.css">
+    <title>智能假人控制台</title>
     <link href="../bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        html {
-            overflow-y: scroll;
-        }
-
         :root {
-            overflow-y: auto;
-            overflow-x: hidden;
+            --sky-050: #f2fbff;
+            --sky-100: #e7f6ff;
+            --sky-200: #d1ebff;
+            --sky-300: #a7d9ff;
+            --sky-400: #65bdf8;
+            --sky-500: #2594ea;
+            --sky-600: #1d79cb;
+            --ink-900: #123044;
+            --ink-700: #395367;
+            --ink-500: #6a8295;
+            --line: rgba(37, 148, 234, 0.14);
+            --panel: rgba(255, 255, 255, 0.94);
+            --panel-strong: #ffffff;
+            --shadow: 0 22px 48px rgba(37, 148, 234, 0.12);
+            --shadow-soft: 0 10px 24px rgba(21, 82, 130, 0.08);
+            --success: #1f9d73;
+            --success-soft: rgba(31, 157, 115, 0.12);
+            --warning: #c17d1f;
+            --warning-soft: rgba(193, 125, 31, 0.12);
+            --danger: #d14d68;
+            --danger-soft: rgba(209, 77, 104, 0.12);
         }
 
-        :root body {
-            position: absolute;
+        * {
+            box-sizing: border-box;
         }
+
         body {
-            width: 100vw;
-            font-family: 'Arial', sans-serif;
-            background-color: #f3f4f8;
-            color: #32383d;
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink-900);
+            font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(101, 189, 248, 0.24), transparent 32%),
+                radial-gradient(circle at right 18%, rgba(37, 148, 234, 0.16), transparent 24%),
+                linear-gradient(180deg, #f5fcff 0%, #f3f8fc 48%, #eef5fb 100%);
         }
-        .container {
-            margin-top: 50px;
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(37, 148, 234, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 148, 234, 0.03) 1px, transparent 1px);
+            background-size: 28px 28px;
+            mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 82%);
         }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            background: rgba(247, 252, 255, 0.82);
+            box-shadow: 0 10px 24px rgba(21, 82, 130, 0.05);
         }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
+
+        .page-shell {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 24px;
         }
-        .connectItem {
-            margin-bottom: 15px;
-        }
-        .connectItemTitle, .connectItemContent {
-            font-size: 18px;
-        }
-        .layui-table td, .layui-table th {
-            height: 60px;
-        }
-        .layui-table-cell {
-            height: 60px;
+
+        .topbar-inner {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            min-height: 78px;
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #7bd3ff 0%, #2594ea 100%);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            box-shadow: 0 16px 26px rgba(37, 148, 234, 0.22);
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .brand-subtitle {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--ink-500);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link-flat {
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
-        }
-        .layui-table-box {
-            background-color: #fff;
-            border-radius: 15px;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            padding: 1rem;
-        }
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        .card-text {
-            font-size: 1.75rem;
-            font-weight: bold;
-            color: #007bff;
-        }
-        .createClientModalStyle{
-            top: 25vh;
-        }
-        @media (max-width: 768px) {
-            .col-md-6, .col-lg-3 {
-                width: 100%;
-            }
-            .btn-primary {
-                width: 100%;
-                margin-bottom: 10px;
-            }
+            min-height: 42px;
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            color: var(--ink-700);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.18s ease;
         }
 
-        
-        .nav-link{
-            color: #fff;
-        }
-        .navbar-logo{
-            color: #fff;
-            margin-left: 40px;
+        .nav-link-flat:hover,
+        .nav-link-flat.is-active {
+            color: var(--sky-600);
+            background: rgba(37, 148, 234, 0.1);
+            border-color: rgba(37, 148, 234, 0.12);
         }
 
-        .layui-nav {
-            position: fixed;
+        .page {
+            padding: 26px 24px 34px;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr);
+            gap: 22px;
+            padding: 28px;
+            border-radius: 28px;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(240, 250, 255, 0.96) 52%, rgba(222, 242, 255, 0.96) 100%);
+            border: 1px solid rgba(37, 148, 234, 0.1);
+            box-shadow: var(--shadow);
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            border-radius: 999px;
+            pointer-events: none;
+        }
+
+        .hero::before {
+            width: 380px;
+            height: 380px;
+            right: -120px;
+            top: -180px;
+            background: radial-gradient(circle, rgba(101, 189, 248, 0.32), transparent 70%);
+        }
+
+        .hero::after {
+            width: 280px;
+            height: 280px;
+            right: 80px;
+            bottom: -170px;
+            background: radial-gradient(circle, rgba(37, 148, 234, 0.18), transparent 72%);
+        }
+
+        .hero-copy,
+        .hero-side {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 34px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(37, 148, 234, 0.11);
+            color: var(--sky-600);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            margin: 18px 0 10px;
+            font-size: clamp(30px, 5vw, 42px);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            max-width: 820px;
+            margin: 0;
+            color: var(--ink-700);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .hero-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .hero-side {
+            align-self: stretch;
+            display: grid;
+            gap: 14px;
+        }
+
+        .hero-side-card {
+            padding: 18px 18px 16px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(37, 148, 234, 0.1);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .hero-side-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-500);
+        }
+
+        .hero-side-value {
+            margin-top: 10px;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--ink-900);
+        }
+
+        .hero-side-text {
+            margin-top: 8px;
+            color: var(--ink-700);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .action-btn,
+        .flat-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 0 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(37, 148, 234, 0.12);
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--ink-900);
+            font-size: 14px;
+            font-weight: 700;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+            box-shadow: 0 8px 20px rgba(21, 82, 130, 0.08);
+        }
+
+        .action-btn:hover,
+        .flat-btn:hover {
+            transform: translateY(-1px);
+            background: #ffffff;
+            border-color: rgba(37, 148, 234, 0.22);
+            box-shadow: 0 16px 26px rgba(21, 82, 130, 0.1);
+            color: var(--ink-900);
+        }
+
+        .flat-btn-primary {
+            color: #fff;
+            background: linear-gradient(135deg, #37a7f8 0%, #1e7fd2 100%);
+            border-color: rgba(37, 148, 234, 0.26);
+            box-shadow: 0 16px 26px rgba(37, 148, 234, 0.2);
+        }
+
+        .flat-btn-primary:hover {
+            color: #fff;
+            background: linear-gradient(135deg, #2c9af0 0%, #166eb9 100%);
+        }
+
+        .flat-btn-success {
+            color: #147453;
+            background: rgba(31, 157, 115, 0.1);
+            border-color: rgba(31, 157, 115, 0.14);
+        }
+
+        .flat-btn-warning {
+            color: #9b6619;
+            background: rgba(193, 125, 31, 0.1);
+            border-color: rgba(193, 125, 31, 0.14);
+        }
+
+        .flat-btn-danger {
+            color: #b33d58;
+            background: rgba(209, 77, 104, 0.1);
+            border-color: rgba(209, 77, 104, 0.14);
+        }
+
+        .flat-btn-danger:hover,
+        .flat-btn-warning:hover,
+        .flat-btn-success:hover {
+            color: inherit;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin: 22px 0 24px;
+        }
+
+        .summary-card,
+        .panel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .summary-card {
+            padding: 20px;
+        }
+
+        .summary-card::before,
+        .panel::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(37, 148, 234, 0.28), transparent);
+        }
+
+        .summary-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink-500);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .summary-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #8edbff 0%, #2d99eb 100%);
+            box-shadow: 0 0 0 8px rgba(37, 148, 234, 0.08);
+        }
+
+        .summary-value {
+            margin-top: 14px;
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .summary-foot {
+            margin-top: 6px;
+            color: var(--ink-700);
+            font-size: 13px;
+        }
+
+        .notice {
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            margin-bottom: 18px;
+            padding: 0;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+
+        .notice.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            padding: 14px 18px;
+            border-radius: 18px;
+            border: 1px solid transparent;
+        }
+
+        .notice-success {
+            background: rgba(31, 157, 115, 0.1);
+            color: #14664a;
+            border-color: rgba(31, 157, 115, 0.14);
+        }
+
+        .notice-error {
+            background: rgba(209, 77, 104, 0.1);
+            color: #9f2e49;
+            border-color: rgba(209, 77, 104, 0.14);
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 430px minmax(0, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .panel {
+            padding: 22px;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .panel-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .panel-subtitle {
+            margin-top: 8px;
+            color: var(--ink-700);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+
+        .panel-chip {
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(37, 148, 234, 0.1);
+            color: var(--sky-600);
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .soft-block {
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(231, 246, 255, 0.72), rgba(255, 255, 255, 0.74));
+            border: 1px solid rgba(37, 148, 234, 0.1);
+        }
+
+        .soft-block-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-500);
+        }
+
+        .soft-block-value {
+            margin-top: 8px;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--ink-900);
+            word-break: break-all;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field-wide {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-700);
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 46px;
+            border-radius: 14px;
+            border: 1px solid rgba(37, 148, 234, 0.14);
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--ink-900);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        .form-check-input:focus {
+            border-color: rgba(37, 148, 234, 0.34);
+            box-shadow: 0 0 0 4px rgba(37, 148, 234, 0.09);
+        }
+
+        textarea.form-control {
+            min-height: 132px;
+            resize: vertical;
+            padding-top: 12px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 46px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(37, 148, 234, 0.06);
+            border: 1px solid rgba(37, 148, 234, 0.08);
+        }
+
+        .form-check-input {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            border-color: rgba(37, 148, 234, 0.2);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--sky-500);
+            border-color: var(--sky-500);
+        }
+
+        .form-check-label {
+            color: var(--ink-900);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .form-help {
+            margin-top: 8px;
+            color: var(--ink-500);
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .hint-line {
+            margin-top: 10px;
+            color: var(--ink-700);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .config-item {
+            height: 100%;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 255, 0.95));
+            border: 1px solid rgba(37, 148, 234, 0.1);
+        }
+
+        .config-item strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--ink-900);
+        }
+
+        .config-item code {
+            display: block;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--ink-700);
+            background: transparent;
+            padding: 0;
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .config-note {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(37, 148, 234, 0.08);
+            color: var(--ink-700);
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+        .panel-wide-section {
+            margin-top: 20px;
+        }
+
+        .selected-bar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .selected-summary {
+            color: var(--ink-700);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .table-wrap {
+            overflow: auto;
+            border-radius: 20px;
+            border: 1px solid rgba(37, 148, 234, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .control-table {
+            width: 100%;
+            min-width: 1080px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .control-table thead th {
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100vw;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 10;
+            z-index: 1;
+            padding: 15px 16px;
+            background: rgba(235, 247, 255, 0.94);
+            color: var(--ink-700);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(37, 148, 234, 0.1);
         }
-        .layui-nav-bar{
-            background-color: #1e9fff;
-        } 
+
+        .control-table tbody td {
+            padding: 15px 16px;
+            border-bottom: 1px solid rgba(37, 148, 234, 0.08);
+            vertical-align: top;
+            color: var(--ink-900);
+            font-size: 14px;
+        }
+
+        .control-table tbody tr:hover {
+            background: rgba(242, 251, 255, 0.84);
+        }
+
+        .row-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .role-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--ink-900);
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .role-meta {
+            margin-top: 6px;
+            color: var(--ink-500);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .role-empty {
+            color: var(--ink-500);
+            font-size: 13px;
+        }
+
+        .row-action {
+            min-height: 36px;
+            padding: 0 12px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .status-badge,
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 28px;
+            padding: 0 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-ok {
+            color: #117252;
+            background: var(--success-soft);
+        }
+
+        .status-warn {
+            color: #9b6619;
+            background: var(--warning-soft);
+        }
+
+        .status-bad {
+            color: #a73650;
+            background: var(--danger-soft);
+        }
+
+        .meta-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-pill {
+            color: var(--sky-600);
+            background: rgba(37, 148, 234, 0.1);
+        }
+
+        .meta-pill.muted {
+            color: var(--ink-700);
+            background: rgba(106, 130, 149, 0.1);
+        }
+
+        .account-code {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(18, 48, 68, 0.05);
+            color: var(--ink-900);
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .account-meta {
+            margin-top: 8px;
+            color: var(--ink-500);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .account-meta strong {
+            color: var(--ink-700);
+        }
+
+        .empty-state {
+            padding: 32px 18px;
+            text-align: center;
+            color: var(--ink-500);
+            line-height: 1.8;
+        }
+
+        .text-muted {
+            color: var(--ink-500) !important;
+        }
+
+        @media (max-width: 1260px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 920px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .config-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .selected-bar,
+            .topbar-inner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .page-shell,
+            .page {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .hero,
+            .panel {
+                border-radius: 22px;
+                padding: 18px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .nav-links,
+            .hero-toolbar,
+            .toolbar {
+                width: 100%;
+            }
+
+            .action-btn,
+            .flat-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- 导航栏 -->
-    <!-- <nav class="navbar navbar-expand-lg" style="background-color: #007bfff0;" style="background-color: #f8f9fa; color: #343a40;">
-        <div class="container-fluid">
-            <a class="navbar-brand navbar-logo" href="/home" onmouseover="this.style.color='white'">
-                <img src="../images/logo.svg" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-                后台管理
-              </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-              <ul class="navbar-nav">
-                <li class="nav-item">
-                  <a class="nav-link" href="/home" onmouseover="this.style.color='white'">首页</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/config" onmouseover="this.style.color='white'">配置信息</a>
-                </li>
-              </ul>
-            </div>
-        </div>
-    </nav> -->
-    <div>
-        <ul class="layui-nav layui-bg-gray">
-            <li class="layui-nav-item">
-                <a href="/home" style="text-decoration: none;display: flex;align-items: center;">
-                    <img src="../images/logo.svg" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-                    后台管理
-                </a>
-            </li>
-            <li class="layui-nav-item">
-                <a href="/home" style="text-decoration: none;">首页</a>
-            </li>
-            <li class="layui-nav-item">
-                <a href="/config" style="text-decoration: none;">配置信息</a>
-            </li>
-          </ul>
-    </div>
-    <div style="width: 100vw; height: 7.5vh"></div>
-
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8" style="width: 100%">
-                <!-- <div class="text-center mb-4">
-                    <h1>服务管理</h1>
-                </div> -->
-                <div class="d-grid gap-2 d-md-block mb-4">
-                    <button id="login" class="btn btn-primary">全体登录</button>
-                    <button id="logout" class="btn btn-primary">全体下线</button>
-                    <button id="exit" class="btn btn-primary">停止进程</button>
-                    <button id="XiangYao" class="btn btn-primary">全体降妖</button>
-                    <button id="createClient" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createClientModal">
-                        创建客户端
-                    </button>
-                    <button class="btn btn-primary loginListButton">列表登录</button>
-                </div>
-                <!-- 连接数量 -->
-                <div class="row">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <span>allConnect:&nbsp;</span>
-                                    <span class="card-text allConnect">0</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <span>connectAAA:&nbsp;</span>
-                                    <span class="card-text connectAAA">0</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <span>connectGs:&nbsp;</span>
-                                    <span class="card-text connectGs">0</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <span>lostConnect:&nbsp;</span>
-                                    <span class="card-text lostConnect">0</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
+    <div class="topbar">
+        <div class="page-shell topbar-inner">
+            <div class="brand-wrap">
+                <div class="brand-mark">AI</div>
                 <div>
-                    <table id="ID-table-demo-data" class="layui-table" lay-skin="nob"></table>
-                    <script type="text/html" id="ID-table-demo-templet-user">
-                        <img src="{{= 'images/' + d.portrait + '.png'}}" alt="" style="width: 50px;height: auto">
-                    </script>
-                    <script type="text/html" id="ID-table-demo-templet-login-button">
-                        <button id="loginNum" class="btn btn-primary loginButton">登录账号</button>
-                        <span>&nbsp;</span>
-                        <button id="loginNum" class="btn btn-primary logoutButton">退出登录</button>
-                    </script>
-                    <script type="text/html" id="ID-table-demo-templet-aaa">
-                        {{=d.aaa}}
-                    </script>
+                    <div class="brand-title">智能假人控制台</div>
+                    <div class="brand-subtitle">批量生成、导入、登录、成品准备与降妖一体化面板</div>
                 </div>
-
-                <div style="height: 1.5vh"></div>
+            </div>
+            <div class="nav-links">
+                <a href="/home" class="nav-link-flat is-active">首页</a>
+                <a href="/config" class="nav-link-flat">配置页</a>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="createClientModal" tabindex="-1" aria-labelledby="createClientModalLabel" aria-hidden="true">
-        <div class="modal-dialog createClientModalStyle">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createClientModalLabel">创建客户端&nbsp;</h5>
-                    <button type="button" class="btn-close" id="closeButton" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="number" id="clientCountInput" class="form-control" placeholder="请输入创建客户端数" value="">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="closeCreateClient" data-bs-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" id="confirmCreateClient">确认</button>
+    <div class="page page-shell">
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="hero-kicker">Batch Control</div>
+                <h1 class="hero-title">批量管理账号，同时把建角策略真正贯通到登录流程</h1>
+                <p class="hero-subtitle">
+                    现在首页会把账号生成、角色名策略、账号导入、单账号控制和批量控制放进一套更清晰的天蓝色工作台里。
+                    批量生成的新账号会携带建角策略，首次登录时就能真正随机生成角色名，不再落回默认逻辑。
+                </p>
+                <div class="hero-toolbar">
+                    <button id="refreshPageBtn" class="action-btn">刷新列表</button>
+                    <button id="loginAllBtn" class="action-btn flat-btn-primary">全部登录</button>
+                    <button id="logoutAllBtn" class="action-btn">全部退出</button>
+                    <button id="xiangyaoAllBtn" class="action-btn">全部降妖</button>
+                    <button id="exitBtn" class="action-btn flat-btn-danger">停止进程</button>
                 </div>
             </div>
-        </div>
+
+            <div class="hero-side">
+                <div class="hero-side-card">
+                    <div class="hero-side-label">批量生成预览</div>
+                    <div id="generatePreviewValue" class="hero-side-value">110001A0001</div>
+                    <div class="hero-side-text">前缀、位数和起始编号修改后会在这里实时预览，方便确认命名规则。</div>
+                </div>
+                <div class="hero-side-card">
+                    <div class="hero-side-label">建角策略提示</div>
+                    <div class="hero-side-text">
+                        “角色名策略”和“角色性别策略”仅在账号首次建角色时生效。已存在角色的成品号不会被改名。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-card-head">
+                    <div class="summary-label">All Connect</div>
+                    <div class="summary-dot"></div>
+                </div>
+                <div id="allConnect" class="summary-value">0</div>
+                <div class="summary-foot">当前已建立连接的总实例数</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-head">
+                    <div class="summary-label">AAA Connect</div>
+                    <div class="summary-dot"></div>
+                </div>
+                <div id="connectAAA" class="summary-value">0</div>
+                <div class="summary-foot">认证服在线状态统计</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-head">
+                    <div class="summary-label">GS Connect</div>
+                    <div class="summary-dot"></div>
+                </div>
+                <div id="connectGs" class="summary-value">0</div>
+                <div class="summary-foot">游戏服在线状态统计</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-head">
+                    <div class="summary-label">Lost Connect</div>
+                    <div class="summary-dot"></div>
+                </div>
+                <div id="lostConnect" class="summary-value">0</div>
+                <div class="summary-foot">当前掉线或未接通的实例</div>
+            </div>
+        </section>
+
+        <div id="pageNotice" class="notice"></div>
+
+        <section class="layout-grid">
+            <div class="stack">
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2 class="panel-title">批量生成账号</h2>
+                            <div class="panel-subtitle">
+                                统一按规则生成账号，并给这些账号附带“首次建角”策略。生成后可直接进入当前控制列表。
+                            </div>
+                        </div>
+                        <div class="panel-chip">新布局</div>
+                    </div>
+
+                    <div class="soft-block" style="margin-bottom: 16px;">
+                        <div class="soft-block-title">命名规则</div>
+                        <div class="soft-block-value">110001 + 前缀 + 左补零编号</div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="prefixInput" class="form-label">账号前缀</label>
+                            <input id="prefixInput" class="form-control" placeholder="A">
+                        </div>
+                        <div class="field">
+                            <label for="indexNumInput" class="form-label">编号位数</label>
+                            <input id="indexNumInput" type="number" min="1" class="form-control" value="4">
+                        </div>
+                        <div class="field">
+                            <label for="startIndexInput" class="form-label">起始编号</label>
+                            <input id="startIndexInput" type="number" min="1" class="form-control" value="1">
+                        </div>
+                        <div class="field">
+                            <label for="countInput" class="form-label">生成数量</label>
+                            <input id="countInput" type="number" min="1" class="form-control" value="20">
+                        </div>
+                        <div class="field">
+                            <label for="charNameModeSelect" class="form-label">角色名策略</label>
+                            <select id="charNameModeSelect" class="form-select">
+                                <option value="cn_random">随机中文名</option>
+                                <option value="gender_pool">男女名池</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="charGenderModeSelect" class="form-label">角色性别策略</label>
+                            <select id="charGenderModeSelect" class="form-select">
+                                <option value="account_parity">按账号尾号</option>
+                                <option value="random">随机性别</option>
+                                <option value="male">固定男角</option>
+                                <option value="female">固定女角</option>
+                            </select>
+                        </div>
+                        <div class="field field-wide">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="generateAutoLogin" checked>
+                                <label class="form-check-label" for="generateAutoLogin">生成后自动登录这些账号</label>
+                            </div>
+                            <div class="form-help">角色名和性别策略只会在该账号没有角色、首次触发建角时生效。</div>
+                        </div>
+                        <div class="field field-wide">
+                            <button id="generateAccountsBtn" class="flat-btn flat-btn-primary w-100">生成到控制列表</button>
+                            <div class="hint-line">适合统一补号、补空号，也适合一批新号一起进列表后再做登录和成品准备。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2 class="panel-title">导入成品号</h2>
+                            <div class="panel-subtitle">已经有现成账号时，可以把账号列表直接贴进来，支持换行、空格、逗号或分号分隔。</div>
+                        </div>
+                        <div class="panel-chip">成品号</div>
+                    </div>
+
+                    <div class="field">
+                        <label for="importAccountsInput" class="form-label">账号列表</label>
+                        <textarea id="importAccountsInput" class="form-control" placeholder="每行一个账号，或使用空格 / 逗号分隔&#10;例如：&#10;110001A0001&#10;110001A0002"></textarea>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 14px;">
+                        <div class="field">
+                            <label for="importStartIndexInput" class="form-label">起始显示编号</label>
+                            <input id="importStartIndexInput" type="number" min="1" class="form-control" value="1">
+                        </div>
+                        <div class="field">
+                            <div class="form-check" style="height: 100%;">
+                                <input class="form-check-input" type="checkbox" id="importAutoLogin">
+                                <label class="form-check-label" for="importAutoLogin">导入后自动登录</label>
+                            </div>
+                        </div>
+                        <div class="field field-wide">
+                            <button id="importAccountsBtn" class="flat-btn w-100">导入到控制列表</button>
+                            <div class="hint-line">账号如果没带 `110001` 前缀，系统会自动补齐并去重。</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="stack">
+                <div class="panel">
+                    <div class="selected-bar">
+                        <div>
+                            <h2 class="panel-title" style="margin-bottom: 10px;">账号控制面板</h2>
+                            <div class="selected-summary">
+                                当前列表 <strong id="totalAccountsLabel">0</strong> 个账号，已勾选 <strong id="selectedAccountsLabel">0</strong> 个。
+                                表格里会同时显示来源和建角策略，方便区分新生成账号与导入成品号。
+                            </div>
+                        </div>
+                        <div class="toolbar">
+                            <button id="batchLoginBtn" class="flat-btn flat-btn-primary">选中登录</button>
+                            <button id="batchLogoutBtn" class="flat-btn">选中退出</button>
+                            <button id="batchPrepareBtn" class="flat-btn flat-btn-success">成品准备</button>
+                            <button id="batchXiangyaoBtn" class="flat-btn flat-btn-warning">选中降妖</button>
+                            <button id="batchDeleteBtn" class="flat-btn flat-btn-danger">选中删除</button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="control-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 56px;">
+                                        <input id="selectAllCheckbox" type="checkbox">
+                                    </th>
+                                    <th style="width: 92px;">编号</th>
+                                    <th style="width: 220px;">账号</th>
+                                    <th style="width: 130px;">来源</th>
+                                    <th style="width: 220px;">建角策略</th>
+                                    <th style="width: 130px;">AAA</th>
+                                    <th style="width: 130px;">GS</th>
+                                    <th style="width: 360px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="accountsTableBody">
+                                <tr>
+                                    <td colspan="8" class="empty-state">正在加载账号列表...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel panel-wide-section">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title">当前关键配置</h2>
+                    <div class="panel-subtitle">这一组已经改成横向卡片预览，方便在首页直接扫一眼默认密码、邮件参数、世界关键词和本地语料概况。</div>
+                </div>
+                <a href="/config" class="panel-chip" style="text-decoration: none;">打开配置页</a>
+            </div>
+
+            <div id="configPreview" class="config-grid">
+                <div class="config-item">
+                    <strong>读取中</strong>
+                    <code>正在加载配置预览...</code>
+                </div>
+            </div>
+
+            <div class="config-note">
+                `world_chat` 现在会作为“自定义补充词库”叠加到本地语料文件 `data/chat_corpus.json` 上一起参与自动喊话。
+            </div>
+        </section>
     </div>
-    <script src="../layui/layui.js"></script>
-    <script src="../bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
+
+    <script src="../bootstrap-5.3.0-alpha1-dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let userDatas = []
+        const state = {
+            userDatas: [],
+            config: {},
+            chatCorpusSummary: null,
+            selectedAccounts: new Set(),
+            instance: null
+        };
 
-        // 登录接口
-        const login = document.getElementById('login');
-        login.addEventListener('click', () => {
-            // 使用 fetch API 调用服务器端的 API
-            fetch('/api/loginAllClient')
-                .then(response => {
-                    let data = response.json()
-                    data.then(res => {
-                        console.log(res)
-                        userDatas =res
-                        console.log('userDatas:',userDatas)
-                        tableInit(userDatas.userDatas)
-                    })
-                    // document.querySelector('#data').innerHTML = JSON.stringify(data)
-                    return data
-                })
-                .then(data => {
-                    console.log(data.result); // 输出 "Function called from app.js"
-                })
-                .catch(error => console.error('Error:', error));
-        });
+        const BATCH_SETTINGS_KEY = 'batchGeneratePreferences';
+        const messageMap = {
+            prefix_required: '请输入账号前缀。',
+            count_invalid: '生成数量必须大于 0。',
+            start_index_invalid: '起始编号必须大于 0。',
+            accounts_empty: '请至少输入一个账号。'
+        };
+        const sourceLabelMap = {
+            batch_generate: '批量生成',
+            manual_import: '手动导入'
+        };
+        const charNameModeLabelMap = {
+            cn_random: '随机中文名',
+            gender_pool: '男女名池'
+        };
+        const charGenderModeLabelMap = {
+            account_parity: '按账号尾号',
+            random: '随机性别',
+            male: '固定男角',
+            female: '固定女角'
+        };
+        const chatSceneLabelMap = {
+            global: '世界',
+            team: '组队',
+            zhuxian: '主线',
+            shimen: '师门',
+            bangpai: '帮派',
+            chubao: '除暴',
+            xiangyao: '降妖'
+        };
 
-        // 退出接口
-        const logout = document.getElementById('logout')
-        logout.addEventListener('click',() => {
-            // 使用 fetch API 调用服务器端的 API
-            fetch('/api/logoutAll')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result == undefined) return;
-                    console.log(data.result);
-                })
-                .catch(error => console.error('Error:', error));
-        });
-
-        // 关闭进程
-        const Stop = document.getElementById('exit')
-        Stop.addEventListener('click',() => {
-            // 使用 fetch API 调用服务器端的 API
-            fetch('/api/exit')
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data.result);
-                })
-                .catch(error => console.error('Error:', error));
-        });
-
-        // 全部降妖
-        const XiangYao = document.getElementById('XiangYao')
-        XiangYao.addEventListener('click',() => {
-            // 使用 fetch API 调用服务器端的 API
-            fetch('/api/allXiangYao')
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data.result);
-                })
-                .catch(error => console.error('Error:', error));
-        });
-
-        // 获取机器人信息接口函数
-        function checkConnections() {
-            fetch('/api/checkConnections')
-                .then(response => {
-                    let data = response.json()
-                    data.then(res => {
-                        console.log(res)
-                        console.log('res:',res)
-                        document.querySelector('.allConnect').innerHTML = res.allConnect
-                        document.querySelector('.connectAAA').innerHTML = res.connectAAA
-                        document.querySelector('.connectGs').innerHTML = res.connectGs
-                        document.querySelector('.lostConnect').innerHTML = res.lostConnect
-                    })
-                    return data
-                })
-                .then(data => {
-                    console.log(data.result); // 输出 "Function called from app.js"
-                })
-                .catch(error => console.error('Error:', error));
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
 
-        setInterval(()=>{
-            checkConnections()
-            // getUserDataListFn()
-            // tableInit(userDatas.userDatas)
-        },1000)
-        checkConnections()
-        getUserDataListFn()
-
-        function tableInit(v) {
-            layui.use('table', function() {
-                var table = layui.table;
-                // 已知数据渲染
-                var inst = table.render({
-                    elem: '#ID-table-demo-data',
-                    skin: 'nob',
-                    height: 450,
-                    cols: [[ //标题栏
-    //                     {field: 'portrait', title: '门派', width: 150,templet: '#ID-table-demo-templet-user'},
-                        {field: 'account', title: '账号', width: 200},
-                        {field: 'aaa', title: 'AAA连接状态', minWidth: 100, width: 300, templet: '#ID-table-demo-templet-aaa'},
-                        {field: 'gs', title: 'GS连接状态', minWidth: 100, width: 300, templet: '#ID-table-demo-templet-gs'},
-                        {field: 'index', title: '操作', minWidth: 250, width: 300, templet: '#ID-table-demo-templet-login-button'}
-
-                    ]],
-                    data: v,
-                    // data: [{ // 赋值已知数据
-                    //     "portrait": "10001",
-                    //     "name": "张三1",
-                    //     "gid": "男"
-                    // }]
-                });
-            });
+        function shortenText(value, maxLength = 60) {
+            const text = String(value ?? '').trim();
+            if (text.length <= maxLength) return text || '-';
+            return `${text.slice(0, maxLength)}...`;
         }
 
-        function getUserDataListFn() {
-            fetch('/api/getUserDataList')
-                .then(response => {
-                    let data = response.json()
-                    data.then(res => {
-                        console.log(res)
-                        userDatas =res
-                        console.log('userDatas:',userDatas)
-                        tableInit(userDatas.userDatas)
-                        BindButton()
-                    })
-                    return data
-                })
-                .then(data => {
-                    if (data.result == undefined) return
-                    console.log(data.result); // 输出 "Function called from app.js"
-                })
-                .catch(error => console.error('Error:', error));
+        function showNotice(message, type = 'success') {
+            const notice = document.getElementById('pageNotice');
+            notice.className = `notice show ${type === 'error' ? 'notice-error' : 'notice-success'}`;
+            notice.textContent = message;
+            window.clearTimeout(showNotice.timer);
+            showNotice.timer = window.setTimeout(() => {
+                notice.className = 'notice';
+                notice.textContent = '';
+            }, 3200);
         }
 
-
-        function BindButton() {
-            //绑定登录按钮
-            let buttonList = document.querySelectorAll('.loginButton');
-            for (let i = 0; i < buttonList.length; i++) {
-                buttonList[i].addEventListener('click', () => {
-                console.log(userDatas)
-                const jsonData = JSON.stringify(userDatas.userDatas[i])
-                console.log(jsonData)
-                // 发送请求
-                fetch('/api/createLoginClinet', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: jsonData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-                        getUserDataListFn()
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-                })
+        async function requestJson(url, options = {}) {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
             }
-            //绑定退出登录按钮
-            let logoutButtonList = document.querySelectorAll('.logoutButton');
-            for (let i = 0; i < logoutButtonList.length; i++) {
-                logoutButtonList[i].addEventListener('click', () => {
-                    console.log(userDatas)
-                    const jsonData = JSON.stringify(userDatas.userDatas[i])
-                    console.log(jsonData)
-                    // 发送单个账号退出登录请求
-                    fetch('/api/logoutSingleAccount', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: jsonData
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Success:', data);
-                            if (!data.success){
-                                alert("并未存在该客户端")
-                            }else {
-                                getUserDataListFn()
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                        });
-                })
-            }
+            return response.json();
         }
 
-        // 创建客户端按钮点击事件
-        const createClientButton = document.getElementById('createClient');
-        createClientButton.addEventListener('click', () => {
-            // 打开模态框
-            const modal = new bootstrap.Modal(document.getElementById('createClientModal'));
-            modal.show();
+        function getResultMessage(result, fallbackMessage) {
+            if (result && typeof result.message === 'string' && result.message.trim()) {
+                return result.message;
+            }
+            return fallbackMessage;
+        }
 
-        });
+        function normalizeStatus(statusText, type) {
+            const value = statusText || '未知';
+            if (type === 'aaa') {
+                if (value === '已连接') return ['status-ok', value];
+                if (value === '未连接' || value === '不存在该连接') return ['status-bad', value];
+                return ['status-warn', value];
+            }
 
-        // 确认创建客户端按钮点击事件
-        const confirmCreateClientButton = document.getElementById('confirmCreateClient');
-        confirmCreateClientButton.addEventListener('click', () => {
-            const inputElement = document.getElementById('clientCountInput');
-            const inputValue = inputElement.value;
-            console.log("pppp")
-            fetch('/api/createLoginAllClinetNum', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ value: inputValue })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    // 关闭模态框
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('createClientModal'));
-                    modal.hide();
-                    // 手动移除遮罩层
-                    const backdrop = document.querySelector('.modal-backdrop');
-                    if (backdrop) {
-                        backdrop.remove();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        });
-    
-        //关闭
-        const closeCreateClientButton = document.getElementById('closeCreateClient');
-        closeCreateClientButton.addEventListener('click', ()=>{
-            closeModel()
-        })
+            if (value === '连接') return ['status-ok', value];
+            if (value === '未连接' || value === '不存在该连接') return ['status-bad', value];
+            return ['status-warn', value];
+        }
 
-        function closeModel() {
-            setTimeout(()=>{
-                // 关闭模态框
-                const backdrop = document.querySelector('.modal-backdrop');
-                console.log(backdrop);
-                if (backdrop) {
-                    backdrop.remove();
+        function formatSource(source) {
+            return sourceLabelMap[source] || '默认';
+        }
+
+        function formatCharacterProfile(item) {
+            const nameModeLabel = charNameModeLabelMap[item.charNameMode] || charNameModeLabelMap.cn_random;
+            const genderModeLabel = charGenderModeLabelMap[item.charGenderMode] || charGenderModeLabelMap.account_parity;
+
+            return `
+                <div class="meta-stack">
+                    <span class="meta-pill">${escapeHtml(nameModeLabel)}</span>
+                    <span class="meta-pill muted">${escapeHtml(genderModeLabel)}</span>
+                </div>
+            `;
+        }
+
+        function formatOwnership(item) {
+            const ownerText = item.ownerStatusLabel || '未归属';
+            const leaseText = item.ownerLeaseUntilLabel ? ` · 到期 ${item.ownerLeaseUntilLabel}` : '';
+            return `<div class="account-meta"><strong>归属</strong> ${escapeHtml(ownerText)}${escapeHtml(leaseText)}</div>`;
+        }
+
+        function formatRoleInfo(item) {
+            const roleName = String(item.roleName || '').trim();
+            if (!roleName) {
+                return '<div class="role-empty">暂未拿到角色名</div>';
+            }
+
+            const metaParts = [];
+            if (item.level !== '' && item.level !== null && item.level !== undefined) {
+                metaParts.push(`Lv.${escapeHtml(item.level)}`);
+            }
+            if (item.mapName) {
+                metaParts.push(escapeHtml(item.mapName));
+            }
+            if (item.chatScene && chatSceneLabelMap[item.chatScene]) {
+                metaParts.push(`${escapeHtml(chatSceneLabelMap[item.chatScene])}中`);
+            }
+
+            return `
+                <div class="role-name">${escapeHtml(roleName)}</div>
+                ${metaParts.length ? `<div class="role-meta">${metaParts.join(' · ')}</div>` : ''}
+            `;
+        }
+
+        function updateSelectedCounter() {
+            const selected = state.userDatas.filter(item => state.selectedAccounts.has(item.account));
+            document.getElementById('selectedAccountsLabel').textContent = selected.length;
+            document.getElementById('totalAccountsLabel').textContent = state.userDatas.length;
+
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (!state.userDatas.length) {
+                selectAllCheckbox.checked = false;
+                return;
+            }
+            selectAllCheckbox.checked = selected.length === state.userDatas.length;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('accountsTableBody');
+            const validAccounts = new Set(state.userDatas.map(item => item.account));
+            state.selectedAccounts.forEach(account => {
+                if (!validAccounts.has(account)) {
+                    state.selectedAccounts.delete(account);
                 }
-            },10)
-        }
-        const closeButton = document.querySelector('#closeButton')
-        closeButton.addEventListener('click',()=>{
-            closeModel()
-        })
+            });
 
-        const loginListButton = document.querySelector('.loginListButton')
-        loginListButton.addEventListener('click',()=>{
-            fetch('/api/loginListClient', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ list: userDatas.userDatas })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => console.error('Error:', error));
-        })
+            if (!state.userDatas.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">当前还没有账号，先批量生成或导入成品号。</td></tr>';
+                updateSelectedCounter();
+                return;
+            }
+
+            tbody.innerHTML = state.userDatas.map(item => {
+                const aaaStatus = normalizeStatus(item.aaa, 'aaa');
+                const gsStatus = normalizeStatus(item.gs, 'gs');
+                const checked = state.selectedAccounts.has(item.account) ? 'checked' : '';
+                const source = formatSource(item.source);
+                const lockedByOther = item.ownerActive && !item.ownedByCurrentInstance && item.ownerInstanceId;
+                const disabledAttr = lockedByOther ? 'disabled title="该账号正被其他实例占用"' : '';
+
+                return `
+                    <tr>
+                        <td>
+                            <input class="row-selector" type="checkbox" data-account="${escapeHtml(item.account)}" ${checked}>
+                        </td>
+                        <td>${escapeHtml(item.index ?? '')}</td>
+                        <td>
+                            <span class="account-code">${escapeHtml(item.account)}</span>
+                            ${formatOwnership(item)}
+                        </td>
+                        <td>${escapeHtml(source)}</td>
+                        <td>${formatCharacterProfile(item)}</td>
+                        <td><span class="status-badge ${aaaStatus[0]}">${escapeHtml(aaaStatus[1])}</span></td>
+                        <td><span class="status-badge ${gsStatus[0]}">${escapeHtml(gsStatus[1])}</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <button class="flat-btn flat-btn-primary row-action" data-action="login" data-account="${escapeHtml(item.account)}" ${disabledAttr}>登录</button>
+                                <button class="flat-btn row-action" data-action="logout" data-account="${escapeHtml(item.account)}" ${disabledAttr}>退出</button>
+                                <button class="flat-btn flat-btn-success row-action" data-action="prepare" data-account="${escapeHtml(item.account)}" ${disabledAttr}>成品准备</button>
+                                <button class="flat-btn flat-btn-warning row-action" data-action="xiangyao" data-account="${escapeHtml(item.account)}" ${disabledAttr}>降妖</button>
+                                <button class="flat-btn flat-btn-danger row-action" data-action="delete" data-account="${escapeHtml(item.account)}" ${disabledAttr}>删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateSelectedCounter();
+        }
+
+        function renderConfigPreview() {
+            const preview = document.getElementById('configPreview');
+            const corpusSummary = state.chatCorpusSummary;
+            const corpusLabel = corpusSummary
+                ? `${corpusSummary.totalCategories || 0} 类 / ${corpusSummary.totalMessages || 0} 句`
+                : '加载中...';
+            const corpusScenes = corpusSummary && Array.isArray(corpusSummary.categories)
+                ? corpusSummary.categories.slice(0, 4).map(item => chatSceneLabelMap[item.key] || item.key).join(', ')
+                : '';
+            const items = [
+                ['账号前缀', state.config.users_prefix || ''],
+                ['账号位数', state.config.users_index_num || ''],
+                ['默认密码', state.config.users_pass || ''],
+                ['组队关键词', shortenText(state.config.world_Team || '', 72)],
+                ['自动喊话词', shortenText(state.config.world_chat || '', 72)],
+                ['本地语料', corpusScenes ? `${corpusLabel} · ${corpusScenes}` : corpusLabel],
+                ['经验邮件', state.config.mail_name || ''],
+                ['装备邮件', state.config.mail_equip || ''],
+                ['宠物邮件', state.config.mail_pet || ''],
+                ['参战宠物', state.config.War_pet || ''],
+                ['乘骑坐骑', state.config.Ride_pet || ''],
+                ['飞行法宝', state.config.equip_fly || ''],
+                ['会员类型', state.config.vip_type || '']
+            ];
+
+            preview.innerHTML = items.map(([label, value]) => `
+                <div class="config-item">
+                    <strong>${escapeHtml(label)}</strong>
+                    <code>${escapeHtml(String(value || '-'))}</code>
+                </div>
+            `).join('');
+        }
+
+        async function loadChatCorpusSummary() {
+            try {
+                state.chatCorpusSummary = await requestJson('/api/chat-corpus/summary');
+                renderConfigPreview();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function refreshStats() {
+            try {
+                const data = await requestJson('/api/checkConnections');
+                document.getElementById('allConnect').textContent = data.allConnect ?? 0;
+                document.getElementById('connectAAA').textContent = data.connectAAA ?? 0;
+                document.getElementById('connectGs').textContent = data.connectGs ?? 0;
+                document.getElementById('lostConnect').textContent = data.lostConnect ?? 0;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function refreshUserData() {
+            try {
+                const data = await requestJson('/api/getUserDataList');
+                state.userDatas = data.userDatas || [];
+                state.instance = data.instance || null;
+                renderTable();
+            } catch (error) {
+                console.error(error);
+                showNotice('刷新账号列表失败。', 'error');
+            }
+        }
+
+        function updateGeneratePreview() {
+            const prefix = document.getElementById('prefixInput').value.trim() || 'A';
+            const indexNum = Math.max(1, Number(document.getElementById('indexNumInput').value || 4));
+            const startIndex = Math.max(1, Number(document.getElementById('startIndexInput').value || 1));
+            const serial = String(startIndex).padStart(indexNum, '0');
+            document.getElementById('generatePreviewValue').textContent = `110001${prefix}${serial}`;
+        }
+
+        function collectBatchDraft() {
+            return {
+                prefix: document.getElementById('prefixInput').value.trim(),
+                indexNum: document.getElementById('indexNumInput').value,
+                startIndex: document.getElementById('startIndexInput').value,
+                count: document.getElementById('countInput').value,
+                charNameMode: document.getElementById('charNameModeSelect').value,
+                charGenderMode: document.getElementById('charGenderModeSelect').value,
+                autoLogin: document.getElementById('generateAutoLogin').checked
+            };
+        }
+
+        function saveBatchDraft() {
+            try {
+                window.localStorage.setItem(BATCH_SETTINGS_KEY, JSON.stringify(collectBatchDraft()));
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function restoreBatchDraft() {
+            try {
+                const raw = window.localStorage.getItem(BATCH_SETTINGS_KEY);
+                if (!raw) return;
+                const draft = JSON.parse(raw);
+
+                if (draft.prefix !== undefined) document.getElementById('prefixInput').value = draft.prefix;
+                if (draft.indexNum) document.getElementById('indexNumInput').value = draft.indexNum;
+                if (draft.startIndex) document.getElementById('startIndexInput').value = draft.startIndex;
+                if (draft.count) document.getElementById('countInput').value = draft.count;
+                if (draft.charNameMode) document.getElementById('charNameModeSelect').value = draft.charNameMode;
+                if (draft.charGenderMode) document.getElementById('charGenderModeSelect').value = draft.charGenderMode;
+                if (typeof draft.autoLogin === 'boolean') document.getElementById('generateAutoLogin').checked = draft.autoLogin;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                state.config = await requestJson('/api/getConfig');
+                if (!document.getElementById('prefixInput').value) {
+                    document.getElementById('prefixInput').value = state.config.users_prefix || '';
+                }
+                if (!document.getElementById('indexNumInput').value) {
+                    document.getElementById('indexNumInput').value = state.config.users_index_num || 4;
+                }
+                renderConfigPreview();
+                updateGeneratePreview();
+            } catch (error) {
+                console.error(error);
+                showNotice('读取配置失败。', 'error');
+            }
+        }
+
+        function getSelectedAccounts() {
+            return state.userDatas
+                .filter(item => state.selectedAccounts.has(item.account))
+                .map(item => item.account);
+        }
+
+        async function runBatchAction(url, accounts, successMessage) {
+            if (!accounts.length) {
+                showNotice('请先勾选账号。', 'error');
+                return;
+            }
+
+            try {
+                const result = await requestJson(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accounts })
+                });
+                showNotice(getResultMessage(result, successMessage));
+                await refreshUserData();
+                await refreshStats();
+            } catch (error) {
+                console.error(error);
+                showNotice('批量操作失败。', 'error');
+            }
+        }
+
+        document.getElementById('refreshPageBtn').addEventListener('click', async () => {
+            await refreshUserData();
+            await refreshStats();
+            showNotice('列表已刷新。');
+        });
+
+        document.getElementById('loginAllBtn').addEventListener('click', async () => {
+            try {
+                await requestJson('/api/loginAllClient');
+                showNotice('已触发全部登录。');
+                await refreshUserData();
+                await refreshStats();
+            } catch (error) {
+                console.error(error);
+                showNotice('全部登录失败。', 'error');
+            }
+        });
+
+        document.getElementById('logoutAllBtn').addEventListener('click', async () => {
+            try {
+                await requestJson('/api/logoutAll');
+                showNotice('已触发全部退出。');
+                await refreshUserData();
+                await refreshStats();
+            } catch (error) {
+                console.error(error);
+                showNotice('全部退出失败。', 'error');
+            }
+        });
+
+        document.getElementById('xiangyaoAllBtn').addEventListener('click', async () => {
+            try {
+                await requestJson('/api/allXiangYao');
+                showNotice('已触发全部降妖。');
+            } catch (error) {
+                console.error(error);
+                showNotice('全部降妖失败。', 'error');
+            }
+        });
+
+        document.getElementById('exitBtn').addEventListener('click', async () => {
+            if (!window.confirm('确认停止当前进程吗？')) return;
+            try {
+                await requestJson('/api/exit');
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+        document.getElementById('generateAccountsBtn').addEventListener('click', async () => {
+            const prefix = document.getElementById('prefixInput').value.trim();
+            const indexNum = Number(document.getElementById('indexNumInput').value || 4);
+            const startIndex = Number(document.getElementById('startIndexInput').value || 1);
+            const count = Number(document.getElementById('countInput').value || 0);
+            const autoLogin = document.getElementById('generateAutoLogin').checked;
+            const charNameMode = document.getElementById('charNameModeSelect').value;
+            const charGenderMode = document.getElementById('charGenderModeSelect').value;
+
+            try {
+                const result = await requestJson('/api/accounts/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prefix, indexNum, startIndex, count, autoLogin, charNameMode, charGenderMode })
+                });
+                if (!result.success) {
+                    showNotice(messageMap[result.message] || '批量生成失败。', 'error');
+                    return;
+                }
+                saveBatchDraft();
+                showNotice(`已生成 ${result.created.length} 个账号。`);
+                await refreshUserData();
+                await refreshStats();
+            } catch (error) {
+                console.error(error);
+                showNotice('批量生成失败。', 'error');
+            }
+        });
+
+        document.getElementById('importAccountsBtn').addEventListener('click', async () => {
+            const accountsText = document.getElementById('importAccountsInput').value;
+            const startIndex = Number(document.getElementById('importStartIndexInput').value || 1);
+            const autoLogin = document.getElementById('importAutoLogin').checked;
+
+            try {
+                const result = await requestJson('/api/accounts/import', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accountsText, startIndex, autoLogin })
+                });
+                if (!result.success) {
+                    showNotice(messageMap[result.message] || '导入成品号失败。', 'error');
+                    return;
+                }
+                showNotice(`已导入 ${result.created.length} 个账号。`);
+                document.getElementById('importAccountsInput').value = '';
+                await refreshUserData();
+                await refreshStats();
+            } catch (error) {
+                console.error(error);
+                showNotice('导入成品号失败。', 'error');
+            }
+        });
+
+        document.getElementById('batchLoginBtn').addEventListener('click', async () => {
+            await runBatchAction('/api/accounts/login', getSelectedAccounts(), '已触发选中账号登录。');
+        });
+
+        document.getElementById('batchLogoutBtn').addEventListener('click', async () => {
+            await runBatchAction('/api/accounts/logout', getSelectedAccounts(), '已触发选中账号退出。');
+        });
+
+        document.getElementById('batchPrepareBtn').addEventListener('click', async () => {
+            await runBatchAction('/api/accounts/prepare-finished', getSelectedAccounts(), '已触发选中账号成品准备。');
+        });
+
+        document.getElementById('batchXiangyaoBtn').addEventListener('click', async () => {
+            await runBatchAction('/api/accounts/xiangyao', getSelectedAccounts(), '已触发选中账号降妖。');
+        });
+
+        document.getElementById('batchDeleteBtn').addEventListener('click', async () => {
+            const accounts = getSelectedAccounts();
+            if (!accounts.length) {
+                showNotice('请先勾选账号。', 'error');
+                return;
+            }
+            if (!window.confirm(`确认删除选中的 ${accounts.length} 个账号吗？`)) return;
+
+            try {
+                await requestJson('/api/accounts/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accounts })
+                });
+                accounts.forEach(account => state.selectedAccounts.delete(account));
+                showNotice('已删除选中账号。');
+                await refreshUserData();
+                await refreshStats();
+            } catch (error) {
+                console.error(error);
+                showNotice('删除账号失败。', 'error');
+            }
+        });
+
+        document.getElementById('selectAllCheckbox').addEventListener('change', event => {
+            if (event.target.checked) {
+                state.userDatas.forEach(item => state.selectedAccounts.add(item.account));
+            } else {
+                state.selectedAccounts.clear();
+            }
+            renderTable();
+        });
+
+        document.getElementById('accountsTableBody').addEventListener('change', event => {
+            if (!event.target.classList.contains('row-selector')) return;
+
+            const account = event.target.getAttribute('data-account');
+            if (event.target.checked) {
+                state.selectedAccounts.add(account);
+            } else {
+                state.selectedAccounts.delete(account);
+            }
+            updateSelectedCounter();
+        });
+
+        document.getElementById('accountsTableBody').addEventListener('click', async event => {
+            const button = event.target.closest('.row-action');
+            if (!button) return;
+
+            const account = button.getAttribute('data-account');
+            const action = button.getAttribute('data-action');
+
+            try {
+                if (action === 'login') {
+                    await requestJson('/api/createLoginClinet', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ account })
+                    });
+                    showNotice(`已触发 ${account} 登录。`);
+                } else if (action === 'logout') {
+                    await requestJson('/api/logoutSingleAccount', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ account })
+                    });
+                    showNotice(`已触发 ${account} 退出。`);
+                } else if (action === 'prepare') {
+                    await requestJson('/api/accounts/prepare-finished', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ accounts: [account] })
+                    });
+                    showNotice(`已触发 ${account} 成品准备。`);
+                } else if (action === 'xiangyao') {
+                    await requestJson('/api/accounts/xiangyao', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ accounts: [account] })
+                    });
+                    showNotice(`已触发 ${account} 降妖。`);
+                } else if (action === 'delete') {
+                    if (!window.confirm(`确认删除账号 ${account} 吗？`)) return;
+                    await requestJson('/api/accounts/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ accounts: [account] })
+                    });
+                    state.selectedAccounts.delete(account);
+                    showNotice(`已删除 ${account}。`);
+                }
+
+                await refreshUserData();
+                await refreshStats();
+            } catch (error) {
+                console.error(error);
+                showNotice('单账号操作失败。', 'error');
+            }
+        });
+
+        [
+            'prefixInput',
+            'indexNumInput',
+            'startIndexInput',
+            'countInput',
+            'charNameModeSelect',
+            'charGenderModeSelect',
+            'generateAutoLogin'
+        ].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                updateGeneratePreview();
+                saveBatchDraft();
+            });
+            document.getElementById(id).addEventListener('change', () => {
+                updateGeneratePreview();
+                saveBatchDraft();
+            });
+        });
+
+        async function initPage() {
+            restoreBatchDraft();
+            await loadConfig();
+            await loadChatCorpusSummary();
+            updateGeneratePreview();
+            await refreshUserData();
+            await refreshStats();
+            window.setInterval(refreshStats, 2000);
+            window.setInterval(refreshUserData, 4000);
+        }
+
+        initPage();
     </script>
 </body>
 </html>

@@ -9,6 +9,7 @@ var Const   = require('./Const.js');
 var mgr     = require('./mgr.js');
 var crypt   = require('crypto');
 var ver     = require('./version.js');
+var chatCorpus = require('./lib/chatCorpus.js');
 
 var TYPE_COUNT_MAX  = 6;
 var TYPE_ZHUXIAN    = 'zhuxian';
@@ -41,6 +42,7 @@ function Instruction(me) {
     this.lastState      = '';
     this.xyChatTime     = this.lastTime;
     this.xySwitchTime   = this.lastTime;
+    this.recentWorldChats = [];
 
     this.setType(TYPE_ZHUXIAN);
     //setInterval(this.wabao.bind(this), 5000);
@@ -94,6 +96,37 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+Instruction.prototype.pushRecentWorldChat = function(message) {
+    if (!message) {
+        return;
+    }
+
+    this.recentWorldChats.unshift(message);
+    if (this.recentWorldChats.length > 6) {
+        this.recentWorldChats.length = 6;
+    }
+};
+
+Instruction.prototype.getWorldChatMessage = function() {
+    var worldChat = getConfig('world_chat') || cfg.world_chat || '';
+    var msg = chatCorpus.pickChatMessage({
+        scene: this.type,
+        mapName: this.me.getCurrentMapName ? this.me.getCurrentMapName() : '',
+        roleName: this.me.data.name || '',
+        account: this.me.account || '',
+        inTeam: Object.keys(this.me.teamData || {}).length > 1,
+        customPhrases: worldChat,
+        recentMessages: this.recentWorldChats
+    });
+
+    if (!msg) {
+        return '';
+    }
+
+    this.pushRecentWorldChat(msg);
+    return msg;
+};
+
 Instruction.prototype.onInterval0 = function() {
     //请求归队
     this.me.con.sendCmd('CMD_RETURN_TEAM', {});
@@ -111,15 +144,10 @@ Instruction.prototype.onInterval3 = function() {
     if(this.me.data.level>=70){
         var randomInt = getRandomInt(1, cfg.users_end);
         if(randomInt <=1){//n个人说话
-            var worldChat = getConfig('world_chat') || cfg.world_chat || '';
-            var rondom = worldChat.split(/[，,]/).filter(function(item) {
-                return item && item.trim();
-            });
-            if (!rondom.length) {
+            var msg = this.getWorldChatMessage();
+            if (!msg) {
                 return;
             }
-            var randomHan = getRandomInt(1, rondom.length);
-            var msg = rondom[randomHan-1].trim();
             if (cfg.debugOn) {
                 console.log("[world chat] send " + this.me.data.name + ": " + msg);
             }

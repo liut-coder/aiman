@@ -11,6 +11,7 @@
 - [docs/04-features-and-logic.md](./docs/04-features-and-logic.md)
 - [docs/05-web-console-api.md](./docs/05-web-console-api.md)
 - [docs/06-data-troubleshooting-and-maintenance.md](./docs/06-data-troubleshooting-and-maintenance.md)
+- [docs/07-batch-account-console.md](./docs/07-batch-account-console.md)
 
 ## 常用脚本
 
@@ -41,3 +42,4 @@ curl -fsSL https://raw.githubusercontent.com/liut-coder/aiman/debian-docker/scri
 4. 查功能逻辑看 `04-features-and-logic`
 5. 看后台操作和接口时看 `05-web-console-api`
 6. 排错和日常维护看 `06-data-troubleshooting-and-maintenance`
+7. 批量导号和 Web 控制台操作看 `07-batch-account-console`

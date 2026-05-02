@@ -6,6 +6,8 @@
 - [04-features-and-logic.md](./04-features-and-logic.md)
 - [05-web-console-api.md](./05-web-console-api.md)
 - [06-data-troubleshooting-and-maintenance.md](./06-data-troubleshooting-and-maintenance.md)
+- [07-batch-account-console.md](./07-batch-account-console.md)
+- [08-multi-instance-ownership-lock.md](./08-multi-instance-ownership-lock.md)
 
 常用脚本：
 

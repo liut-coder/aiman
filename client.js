@@ -13,7 +13,6 @@ var comm = require("./comm/Comm.js");
 var Log = require("./lib/log.js");
 var DES = require("./lib/des.js");
 var Const = require("./Const.js");
-const fs = require('fs');
 var os = require("os");
 var crypto = require("crypto");
 var utils = require("./comm/Utils.js");
@@ -31,6 +30,12 @@ function Client(connectType) {
   this.createCount = 0;
   this.connectAAACount = 0;
   this.lineupLogin = 0;
+  this.characterProfile = {
+    nameMode: "cn_random",
+    genderMode: "account_parity"
+  };
+  this.pendingCharacterName = "";
+  this.randomNameTimer = 0;
 
   if (connectType == Const.CONNECT_TYPE.NORMAL) {
     this.regSelfCallback("MSG_CLIENT_CONNECTED", this.onConnected);
@@ -136,7 +141,45 @@ Client.prototype.error = function(info) {
 //
 //   return name;
 // }
-Client.prototype.buildCharName = function(gender) {
+Client.prototype.setCharacterProfile = function(profile) {
+  const nextProfile = profile || {};
+  const nextNameMode = nextProfile.nameMode === "gender_pool" ? "gender_pool" : "cn_random";
+  const nextGenderMode = ["account_parity", "random", "male", "female"].includes(nextProfile.genderMode)
+    ? nextProfile.genderMode
+    : "account_parity";
+
+  this.characterProfile = {
+    nameMode: nextNameMode,
+    genderMode: nextGenderMode
+  };
+};
+
+Client.prototype.resolveCharacterGender = function() {
+  const genderMode = (this.characterProfile && this.characterProfile.genderMode) || "account_parity";
+  if (genderMode === "male") return 1;
+  if (genderMode === "female") return 2;
+  if (genderMode === "random") return Math.random() > 0.5 ? 1 : 2;
+
+  return parseInt(this.account[this.account.length - 1], 10) % 2 === 1 ? 1 : 2;
+};
+
+Client.prototype.buildChineseCharName = function() {
+  const chars = Array.isArray(cfg.charNameChars) ? cfg.charNameChars : [];
+  if (!chars.length) {
+    return "";
+  }
+
+  const length = Math.random() > 0.62 ? 3 : 2;
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+
+  return result;
+};
+
+Client.prototype.buildGenderPoolName = function(gender) {
   let names = [];
   if (gender === 1) {
     names = cfg.maleNames;
@@ -151,6 +194,20 @@ Client.prototype.buildCharName = function(gender) {
   let randomIndex = Math.floor(Math.random() * names.length);
   let randomName = names[randomIndex];
   return randomName;
+};
+
+Client.prototype.buildCharName = function(gender) {
+  const nameMode = (this.characterProfile && this.characterProfile.nameMode) || "cn_random";
+  if (nameMode === "gender_pool") {
+    return this.buildGenderPoolName(gender);
+  }
+
+  const chineseName = this.buildChineseCharName();
+  if (chineseName) {
+    return chineseName;
+  }
+
+  return this.buildGenderPoolName(gender);
 };
 
 // 设置 aaa 信息
@@ -481,18 +538,6 @@ Client.prototype.onAgentResult = function(msg, data) {
     this.loginAAAStep = 5;
   }
 };
-function getRandomName() {
-  // let maleRawData = fs.readFileSync(path.join(__dirname, 'name.json'));
-  // console.log(maleRawData,'maleRawData')
-  let maleRawData1 = fs.readFileSync('./name.json');
-  var  arr = JSON.parse(maleRawData1)
-  var chineseString = arr.toString()
-  const minLength = 2;
-  const maxLength = 6;
-  const nameLength = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
-  const startIndex = Math.floor(Math.random() * (chineseString.length - nameLength));
-  return chineseString.substr(startIndex, nameLength);
-}
 Client.prototype.onCharList = function(msg, data) {
     // 标记为还没进入游戏世界
     if (this.me.loginTimer) {
@@ -503,12 +548,20 @@ Client.prototype.onCharList = function(msg, data) {
 
     if (data.count == 0) {
         this.polar = (Math.floor(Math.random() * 10) % 5) + 1;
-        this.gender = parseInt(this.account[this.account.length - 1]) % 2 == 1 ? 1 : 2;
-        //let randomName = this.buildCharName(this.gender);
+        this.gender = this.resolveCharacterGender();
+        this.pendingCharacterName = this.buildCharName(this.gender);
         this.sendCmd('CMD_RANDOM_NAME', { gender : this.gender - 1});//服务端方法
-        this.onRandomName(1, { new_name: this.buildCharName(this.account) });//服务端方法
-      // let randomName =  getRandomName()
-      // this.onRandomName(1, { new_name: randomName });
+
+        if (this.randomNameTimer) {
+          clearTimeout(this.randomNameTimer);
+        }
+
+        var obj = this;
+        this.randomNameTimer = setTimeout(function() {
+          if (!obj.pendingCharacterName) return;
+          obj.onRandomName(1, { new_name: obj.pendingCharacterName });
+        }, 800);
+
         ++this.createCount;
     } else if (data[0].trading_state == 0 || data[0].trading_state == Const.TRADING_STATE.SHOW) {
         // 加载第一个角色
@@ -524,11 +577,18 @@ Client.prototype.onCharList = function(msg, data) {
 };
 
 Client.prototype.onRandomName = function(msg, data) {
-  this.trace("create char: " + data.new_name);
+  if (this.randomNameTimer) {
+    clearTimeout(this.randomNameTimer);
+    this.randomNameTimer = 0;
+  }
+
+  const nextName = this.pendingCharacterName || data.new_name;
+  this.pendingCharacterName = "";
+  this.trace("create char: " + nextName);
   this.sendCmd("CMD_CREATE_NEW_CHAR", {
     polar: this.polar,
     gender: this.gender,
-    char_name: data.new_name
+    char_name: nextName
   });
 };
 

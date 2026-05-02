@@ -12,12 +12,40 @@ var Const = require("./Const.js");
 var mgr = require("./mgr.js");
 var TestClient = require("./testclient.js");
 
+const crypto = require('crypto');
 const path = require('path');
+const chatCorpus = require('./lib/chatCorpus');
 const {
-  userDatas,
-  getUserDatas,pushUserData,
-  writeUserData,
+  claimUserAccounts,
+  getOwnedUserDatas,
+  getUserDatas,
+  isLeaseActive,
+  releaseUserAccounts,
+  removeOwnedUserAccounts,
+  renewOwnedUserAccounts,
+  upsertOwnedUserDatas,
+  upsertUserDatas,
 } = require('./data/data');
+
+const HTTP_PORT = Number(process.env.HTTP_PORT || cfg.http_port);
+const INSTANCE_LEASE_MS = Math.max(30000, Number(process.env.INSTANCE_LEASE_MS || 120000));
+const INSTANCE_HEARTBEAT_MS = Math.max(5000, Number(process.env.INSTANCE_HEARTBEAT_MS || 15000));
+const INSTANCE_HOST = os.hostname();
+const INSTANCE_ROOT = path.resolve(__dirname);
+const INSTANCE_HASH = crypto
+  .createHash('md5')
+  .update(`${INSTANCE_HOST}|${HTTP_PORT}|${INSTANCE_ROOT}`)
+  .digest('hex')
+  .slice(0, 8);
+const INSTANCE_INFO = {
+  id: `${INSTANCE_HOST}:${HTTP_PORT}:${INSTANCE_HASH}`,
+  label: `${INSTANCE_HOST}:${HTTP_PORT}`,
+  host: INSTANCE_HOST,
+  port: HTTP_PORT,
+  pid: process.pid,
+  projectRoot: INSTANCE_ROOT,
+  startedAt: new Date().toISOString()
+};
 
 let allConnectData = 0
 let connectAAAData = 0
@@ -68,6 +96,7 @@ setDefaultConfigObj({
   "users_prefix": cfg.users_prefix,
   "users_index_num": cfg.users_index_num,
   "users_pass": cfg.users_pass,
+  "instance_lock_enabled": 0,
   "mail_name": cfg.mail_name,
   "mail_equip": cfg.mail_equip,
   "mail_pet": cfg.mail_pet,
@@ -189,6 +218,390 @@ getAccountNum = function(index,num) {
   return "110001" + getConfig("users_prefix") + prefixInteger(index, getConfig('users_index_num'));
 };
 
+generateAccountName = function(index, prefix, indexNum) {
+  return "110001" + prefix + prefixInteger(index, indexNum);
+};
+
+normalizeAccount = function(account) {
+  if (account === undefined || account === null) return "";
+  let value = String(account).trim();
+  if (!value) return "";
+  value = value.replace(/\s+/g, "");
+  if (!value.startsWith("110001")) {
+    value = "110001" + value;
+  }
+  return value;
+};
+
+const DEFAULT_CHAR_NAME_MODE = 'cn_random';
+const DEFAULT_CHAR_GENDER_MODE = 'account_parity';
+
+normalizeCharNameMode = function(mode) {
+  return mode === 'gender_pool' ? 'gender_pool' : DEFAULT_CHAR_NAME_MODE;
+};
+
+normalizeCharGenderMode = function(mode) {
+  return ['account_parity', 'random', 'male', 'female'].includes(mode)
+    ? mode
+    : DEFAULT_CHAR_GENDER_MODE;
+};
+
+buildCharacterProfile = function(source) {
+  const data = source || {};
+  return {
+    charNameMode: normalizeCharNameMode(data.charNameMode || data.nameMode),
+    charGenderMode: normalizeCharGenderMode(data.charGenderMode || data.genderMode)
+  };
+};
+
+findUserRecordByAccount = function(account) {
+  const normalized = normalizeAccount(account);
+  if (!normalized) return null;
+
+  return getUserDatas().find(item => normalizeAccount(item.account) === normalized) || null;
+};
+
+syncClientCharacterProfile = function(client, account) {
+  if (!client || typeof client.setCharacterProfile !== 'function') {
+    return client;
+  }
+
+  const record = findUserRecordByAccount(account);
+  const profile = buildCharacterProfile(record || {});
+  client.setCharacterProfile({
+    nameMode: profile.charNameMode,
+    genderMode: profile.charGenderMode
+  });
+  return client;
+};
+
+ensureClient = function(account) {
+  account = normalizeAccount(account);
+  if (!account) return null;
+
+  if (!clients[account]) {
+    var pass = getConfig('users_pass');
+    var client = Client.create(Const.CONNECT_TYPE.NORMAL);
+    client.setAAA(cfg.host, cfg.port);
+    client.setAccount(account, pass);
+    clients[account] = client;
+  }
+
+  syncClientCharacterProfile(clients[account], account);
+  return clients[account];
+};
+
+getClientStatusLabel = function(account) {
+  const status = checkClientStatusObject(account);
+  if (!status) {
+    return {
+      aaa: '未连接',
+      gs: '未连接'
+    };
+  }
+  return status;
+};
+
+getClientRuntimeSnapshot = function(account) {
+  const client = clients[normalizeAccount(account)];
+  if (!client || !client.me) {
+    return {};
+  }
+
+  const me = client.me;
+  const data = me.data || {};
+  const level = Number.isFinite(Number(data.level)) ? Number(data.level) : '';
+  const mapName = typeof me.getCurrentMapName === 'function' ? (me.getCurrentMapName() || '') : '';
+
+  return {
+    roleName: data.name || '',
+    level: level,
+    mapName: mapName,
+    serverName: data.serverName || '',
+    chatScene: me.instruction && me.instruction.type ? me.instruction.type : ''
+  };
+};
+
+buildUserRecord = function(account, index, extra) {
+  const status = getClientStatusLabel(account);
+  const record = Object.assign({
+    account: account,
+    index: index,
+    aaa: status.aaa,
+    gs: status.gs,
+    roleName: '',
+    level: '',
+    mapName: '',
+    serverName: '',
+    chatScene: '',
+    charNameMode: DEFAULT_CHAR_NAME_MODE,
+    charGenderMode: DEFAULT_CHAR_GENDER_MODE
+  }, extra || {});
+  const profile = buildCharacterProfile(record);
+  record.charNameMode = profile.charNameMode;
+  record.charGenderMode = profile.charGenderMode;
+  return record;
+};
+
+isInstanceLockEnabled = function() {
+  const value = getConfig('instance_lock_enabled');
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    return !['0', 'false', 'off', 'disabled', 'no'].includes(normalized);
+  }
+  return value !== 0 && value !== false;
+};
+
+formatLeaseTime = function(timestamp) {
+  const value = Number(timestamp);
+  if (!Number.isFinite(value) || value <= 0) return '';
+  return new Date(value).toLocaleString('zh-CN', { hour12: false });
+};
+
+buildOwnershipView = function(record) {
+  const lockEnabled = isInstanceLockEnabled();
+  const ownerInstanceId = record && record.ownerInstanceId ? record.ownerInstanceId : '';
+  const ownerLabel = record && record.ownerLabel ? record.ownerLabel : '';
+  const ownerLeaseUntil = Number(record && record.ownerLeaseUntil) || 0;
+  const ownerActive = lockEnabled ? isLeaseActive(record) : false;
+  const ownedByCurrentInstance = Boolean(ownerInstanceId) && ownerInstanceId === INSTANCE_INFO.id;
+
+  let ownerStatusLabel = lockEnabled ? '未归属' : '锁已关闭';
+  if (lockEnabled) {
+    if (ownedByCurrentInstance) {
+      ownerStatusLabel = '当前实例';
+    } else if (ownerInstanceId) {
+      ownerStatusLabel = ownerActive ? `已锁定 ${ownerLabel || '其他实例'}` : `锁已过期 ${ownerLabel || '其他实例'}`;
+    }
+  }
+
+  return {
+    instanceLockEnabled: lockEnabled,
+    ownerInstanceId,
+    ownerLabel,
+    ownerLeaseUntil,
+    ownerLeaseUntilLabel: formatLeaseTime(ownerLeaseUntil),
+    ownerActive,
+    ownedByCurrentInstance,
+    ownerStatusLabel
+  };
+};
+
+enrichUserRecordOwnership = function(record) {
+  return Object.assign({}, record, buildOwnershipView(record));
+};
+
+normalizeAccountList = function(accounts) {
+  const unique = new Set();
+  (Array.isArray(accounts) ? accounts : []).forEach(account => {
+    const normalized = normalizeAccount(account);
+    if (normalized) unique.add(normalized);
+  });
+  return Array.from(unique);
+};
+
+buildActionMessage = function(actionLabel, successCount, conflicts, skippedCount) {
+  const done = Number(successCount) || 0;
+  const blocked = Array.isArray(conflicts) ? conflicts.length : 0;
+  const skipped = Number(skippedCount) || 0;
+  const parts = [`${actionLabel} ${done} 个账号`];
+
+  if (blocked) {
+    parts.push(`被其他实例占用 ${blocked} 个`);
+  }
+  if (skipped) {
+    parts.push(`其余跳过 ${skipped} 个`);
+  }
+
+  return parts.join('，');
+};
+
+getOwnedAccountsForCurrentInstance = function() {
+  return getOwnedUserDatas(INSTANCE_INFO.id).map(item => normalizeAccount(item && item.account)).filter(Boolean);
+};
+
+claimAccountsForCurrentInstance = function(accounts) {
+  const normalized = normalizeAccountList(accounts);
+  if (!isInstanceLockEnabled()) {
+    return {
+      claimed: normalized,
+      conflicts: [],
+      userDatas: getUserDatas()
+    };
+  }
+  return claimUserAccounts(normalized, INSTANCE_INFO, INSTANCE_LEASE_MS);
+};
+
+upsertAccountsForCurrentInstance = function(records) {
+  if (!isInstanceLockEnabled()) {
+    return {
+      saved: normalizeAccountList((Array.isArray(records) ? records : []).map(item => item && item.account)),
+      conflicts: [],
+      userDatas: upsertUserDatas(records)
+    };
+  }
+  return upsertOwnedUserDatas(records, INSTANCE_INFO, INSTANCE_LEASE_MS);
+};
+
+renewCurrentInstanceOwnership = function(accounts) {
+  if (!isInstanceLockEnabled()) {
+    return { renewed: [], userDatas: getUserDatas() };
+  }
+  return renewOwnedUserAccounts(INSTANCE_INFO, INSTANCE_LEASE_MS, normalizeAccountList(accounts));
+};
+
+releaseCurrentInstanceOwnership = function(accounts) {
+  return releaseUserAccounts(normalizeAccountList(accounts), INSTANCE_INFO.id);
+};
+
+generateBatchAccounts = function(startIndex, count, prefix, indexNum) {
+  const result = [];
+  for (let i = 0; i < count; i++) {
+    const index = startIndex + i;
+    result.push({
+      account: generateAccountName(index, prefix, indexNum),
+      index: index
+    });
+  }
+  return result;
+};
+
+parseAccountText = function(rawText) {
+  if (!rawText) return [];
+
+  const unique = new Set();
+  String(rawText)
+    .split(/[\r\n,，;\s]+/)
+    .map(item => normalizeAccount(item))
+    .filter(Boolean)
+    .forEach(item => unique.add(item));
+
+  return Array.from(unique);
+};
+
+loginAccounts = function(accounts) {
+  const normalized = normalizeAccountList(accounts);
+  const claimResult = claimAccountsForCurrentInstance(normalized);
+  const logged = [];
+  const skipped = [];
+
+  claimResult.claimed.forEach(account => {
+    const client = ensureClient(account);
+    if (!client) {
+      skipped.push({ account, reason: 'client_create_failed' });
+      return;
+    }
+    client.login();
+    logged.push(client.account);
+  });
+
+  return {
+    accounts: logged,
+    conflicts: claimResult.conflicts,
+    skipped,
+    message: buildActionMessage('已触发登录', logged.length, claimResult.conflicts, skipped.length)
+  };
+};
+
+logoutAccounts = function(accounts) {
+  const normalized = normalizeAccountList(accounts);
+  const claimResult = claimAccountsForCurrentInstance(normalized);
+  const loggedOut = [];
+  const skipped = [];
+
+  claimResult.claimed.forEach(account => {
+    const ok = logoutSingleAccount(account);
+    if (ok) {
+      loggedOut.push(account);
+      return;
+    }
+    skipped.push({ account, reason: 'client_not_found' });
+  });
+
+  return {
+    accounts: loggedOut,
+    conflicts: claimResult.conflicts,
+    skipped,
+    message: buildActionMessage('已触发退出', loggedOut.length, claimResult.conflicts, skipped.length)
+  };
+};
+
+prepareFinishedClient = function(account) {
+  const client = clients[normalizeAccount(account)];
+  if (!client || !client.getGs()) {
+    return { account: normalizeAccount(account), ok: false, reason: 'not_connected' };
+  }
+
+  client.me.receiveCurrentMail(getConfig('mail_pet'));
+  client.me.receiveCurrentMail(getConfig('mail_name'));
+  client.me.receiveCurrentMail(getConfig('mail_equip'));
+  client.me.buyVip(getConfig('vip_type'));
+
+  for (var petId in client.me.pets) {
+    var pet = client.me.pets[petId];
+    if (getConfig('War_pet') == pet.name) {
+      client.me.con.sendCmd("CMD_SELECT_CURRENT_PET", { id: pet.id, pet_status: 1 });
+      client.me.con.sendCmd("CMD_SET_RECOMMEND_ATTRIB", { petId: pet.id, con: 0, wiz: 0, str: 4, dex: 0 });
+    }
+    if (getConfig('Ride_pet') == pet.name) {
+      client.me.con.sendCmd("CMD_SELECT_CURRENT_MOUNT", { petId: pet.id });
+    }
+  }
+
+  for (var pos in client.me.items) {
+    var item = client.me.items[pos];
+    if (!item || item.pos < 41) continue;
+    if (getConfig('equip_fly') == item.name) {
+      client.me.con.sendCmd('CMD_EQUIP', { pos: item.pos, equip_part: 40 });
+    }
+  }
+
+  return { account: normalizeAccount(account), ok: true };
+};
+
+prepareFinishedAccounts = function(accounts) {
+  const normalized = normalizeAccountList(accounts);
+  const claimResult = claimAccountsForCurrentInstance(normalized);
+  const result = claimResult.claimed.map(account => prepareFinishedClient(account));
+  const skipped = result.filter(item => !item.ok);
+
+  return {
+    result,
+    conflicts: claimResult.conflicts,
+    skipped,
+    message: buildActionMessage(
+      '已触发成品准备',
+      result.filter(item => item.ok).length,
+      claimResult.conflicts,
+      skipped.length
+    )
+  };
+};
+
+runXiangyaoAccounts = function(accounts) {
+  const normalized = normalizeAccountList(accounts);
+  const claimResult = claimAccountsForCurrentInstance(normalized);
+  const list = [];
+  const skipped = [];
+
+  claimResult.claimed.forEach(account => {
+    const client = clients[account];
+    if (!client || !client.getGs()) {
+      skipped.push({ account, reason: 'not_connected' });
+      return;
+    }
+    client.me.GoXiangYao();
+    list.push(account);
+  });
+
+  return {
+    accounts: list,
+    conflicts: claimResult.conflicts,
+    skipped,
+    message: buildActionMessage('已触发降妖', list.length, claimResult.conflicts, skipped.length)
+  };
+};
+
 // 创建所有的客户端
 createClinet = function() {
   var count = 0;
@@ -213,6 +626,7 @@ createClinet = function() {
 let stratNum = 1
 createClinetNum = function(num) {
   var count = 0;
+  const records = [];
   for (var i = stratNum; i < stratNum+Number(num); ++i) {
     console.log('i',i,'  num',num)
     // var account = getAccountNum(i,num);
@@ -229,12 +643,15 @@ createClinetNum = function(num) {
     count++;
     //获取状态
     const status = checkClientStatusObject(account)
-    pushUserData({
+    records.push({
       account: account,
       index: i,
       aaa: status.aaa,
       gs: status.gs
     })
+  }
+  if (records.length) {
+    upsertAccountsForCurrentInstance(records);
   }
   stratNum = stratNum + Number(num)
 
@@ -243,40 +660,40 @@ createClinetNum = function(num) {
 
 //创建并登录单个账号
 createLoginClinet = function (username) {
-  let account = username
-  var client2 = clients[account];
-  if (client2 == undefined){
-    // var pass = users_pass;
-    var pass = getConfig('users_pass');
-    var client = Client.create(Const.CONNECT_TYPE.NORMAL);
-    client.setAAA(cfg.host, cfg.port);
-    client.setAccount(account, pass);
-    clients[account] = client;
-  }
-  clients[account].login();
+  return loginAccounts([username]);
 }
 
 // 登陆所有的帐号，直接登陆，登陆失败的在Client内部自行处理
 loginAllClient = function() {
   this.loginAllTime = os.uptime();
+  const knownAccounts = new Set();
 
   for (var key in clients) {
-    var client = clients[key];
-    client.login();
+    knownAccounts.add(normalizeAccount(key));
   }
+
+  getUserDatas().forEach(item => {
+    const account = normalizeAccount(item && item.account);
+    if (account) knownAccounts.add(account);
+  });
+
+  const ownedAccounts = getOwnedAccountsForCurrentInstance();
+  ownedAccounts.forEach(account => knownAccounts.add(account));
+
+  return loginAccounts(Array.from(knownAccounts));
 };
 
 //登录列表中的所有账号
 loginListClient = function (list) {
-  list.forEach((item) => {
-    createLoginClinet(item.account)
-  })
+  const accounts = (Array.isArray(list) ? list : []).map(item => item && item.account);
+  return loginAccounts(accounts);
 }
 
 // 创建并登录所有账号
 // let stratNum = 1
 createLoginAllClinetNum = function(num) {
   var count = 0;
+  const records = [];
   for (var i = stratNum; i < stratNum+Number(num); ++i) {
     console.log('i',i,'  num',num)
     // var account = getAccountNum(i,num);
@@ -293,19 +710,94 @@ createLoginAllClinetNum = function(num) {
     count++;
     //获取状态
     const status = checkClientStatusObject(account)
-    // pushUserData({account:account,index:i})
-    pushUserData({
+    records.push({
       account: account,
       index: i,
       aaa: status.aaa,
       gs: status.gs
     })
-    //登录单个账号
-    createLoginClinet(account)
+  }
+  if (records.length) {
+    upsertAccountsForCurrentInstance(records);
+    loginAccounts(records.map(item => item.account));
   }
   stratNum = stratNum + Number(num)
 
   console.log("create Client complete totle : \n" + count);
+};
+
+createBatchUserRecords = function(options) {
+  const startIndex = Number(options.startIndex || 1);
+  const count = Number(options.count || 0);
+  const prefix = String(options.prefix || getConfig('users_prefix') || '').trim();
+  const indexNum = Number(options.indexNum || getConfig('users_index_num') || 4);
+  const autoLogin = options.autoLogin === true;
+  const charNameMode = normalizeCharNameMode(options.charNameMode);
+  const charGenderMode = normalizeCharGenderMode(options.charGenderMode);
+
+  if (!prefix) {
+    return { created: [], message: 'prefix_required' };
+  }
+  if (!Number.isFinite(count) || count <= 0) {
+    return { created: [], message: 'count_invalid' };
+  }
+  if (!Number.isFinite(startIndex) || startIndex <= 0) {
+    return { created: [], message: 'start_index_invalid' };
+  }
+
+  const accounts = generateBatchAccounts(startIndex, count, prefix, indexNum);
+  const records = accounts.map(item => buildUserRecord(item.account, item.index, {
+    source: 'batch_generate',
+    charNameMode: charNameMode,
+    charGenderMode: charGenderMode
+  }));
+
+  const savedResult = upsertAccountsForCurrentInstance(records);
+  const created = records.filter(item => savedResult.saved.includes(item.account));
+  let loginResult = null;
+
+  if (autoLogin && created.length) {
+    loginResult = loginAccounts(created.map(item => item.account));
+  }
+
+  return {
+    created,
+    conflicts: savedResult.conflicts,
+    loginResult,
+    message: savedResult.conflicts.length ? 'partial_conflict' : 'ok'
+  };
+};
+
+importUserAccounts = function(options) {
+  const accounts = parseAccountText(options.accountsText);
+  const autoLogin = options.autoLogin === true;
+  const baseIndex = Number(options.startIndex || 1);
+
+  if (!accounts.length) {
+    return { created: [], message: 'accounts_empty' };
+  }
+  if (!Number.isFinite(baseIndex) || baseIndex <= 0) {
+    return { created: [], message: 'start_index_invalid' };
+  }
+
+  const records = accounts.map((account, idx) =>
+    buildUserRecord(account, baseIndex + idx, { source: 'manual_import' })
+  );
+
+  const savedResult = upsertAccountsForCurrentInstance(records);
+  const created = records.filter(item => savedResult.saved.includes(item.account));
+  let loginResult = null;
+
+  if (autoLogin && created.length) {
+    loginResult = loginAccounts(created.map(item => item.account));
+  }
+
+  return {
+    created,
+    conflicts: savedResult.conflicts,
+    loginResult,
+    message: savedResult.conflicts.length ? 'partial_conflict' : 'ok'
+  };
 };
 
 beginAutoWalkByIdx = function(mapId, x, y, idx) {
@@ -540,6 +1032,11 @@ teamMatchTeam = function(type) {
 
 // 结束进程
 exit = function() {
+  try {
+    releaseCurrentInstanceOwnership();
+  } catch (error) {
+    console.log('release ownership on exit error', error);
+  }
   process.exit();
 };
 
@@ -612,7 +1109,6 @@ checkClientStatus = function(account) {
 checkClientStatusObject = function(account) {
   var client = clients[account];
   if (null == client) {
-    console.log("[" + account + "] client not exit !");
     return;
   }
 
@@ -1075,9 +1571,26 @@ if (cfg.debugWsConnect) {
   // loginAllClient();
 }
 
+startOwnershipHeartbeat = function() {
+  const heartbeat = () => {
+    try {
+      renewCurrentInstanceOwnership();
+    } catch (error) {
+      console.log('renew ownership error', error);
+    }
+  };
+
+  heartbeat();
+  const timer = setInterval(heartbeat, INSTANCE_HEARTBEAT_MS);
+  if (timer && typeof timer.unref === 'function') {
+    timer.unref();
+  }
+  return timer;
+};
+
 const express = require('express');
 const app = express();
-const port = Number(process.env.HTTP_PORT || cfg.http_port);
+const port = HTTP_PORT;
 
 // 设置模板引擎为 EJS
 app.set('view engine', 'ejs');
@@ -1087,22 +1600,28 @@ app.use(express.json());
 // app.use(express.static('public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// const { userDatas,allConnect, connectAAA,connectGs,lostConnect } = require('./data/data');
 // 定义路由
 app.get('/home', (req, res) => {
   // 渲染 views 目录下的 index.ejs 文件
-  res.render('index', { title: 'Home Page', message: JSON.stringify(userDatas) });
+  res.render('index', { title: 'Home Page', message: JSON.stringify(getUserDatas()) });
 });
 app.get('/config', (req, res) => {
   // 渲染 views 目录下的 index.ejs 文件
-  res.render('configView', { title: 'Home Page', message: JSON.stringify(userDatas) });
+  res.render('configView', { title: 'Home Page', message: JSON.stringify(getUserDatas()) });
 });
 
 //登录接口
 app.get('/api/loginAllClient', (req, res) => {
   // 调用服务器端的函数
   const result = loginAllClient();
-  res.json({ userDatas });
+  res.json({
+    success: true,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message,
+    userDatas: getUserDatas()
+  });
 });
 //退出接口
 app.get('/api/logoutAll', (req, res) => {
@@ -1137,20 +1656,63 @@ app.get('/api/checkConnections', (req, res) => {
 });
 app.get('/api/getUserDataList', (req, res) => {
   const data = getUserDatas()
-  // res.json({ userDatas });
-  console.log(data)
-  data.forEach((item)=>{
-    let obj = checkClientStatusObject(item.account)
-    if (obj === undefined) {
-      item.aaa = '不存在该连接'
-      item.gs = '不存在该连接'
-    }else {
-      item.aaa = obj.aaa
-      item.gs = obj.gs
+  const persistUpdates = [];
+  const next = data.map(item => {
+    const status = checkClientStatusObject(item.account);
+    const runtime = getClientRuntimeSnapshot(item.account);
+    const ownership = buildOwnershipView(item);
+    const roleName = runtime.roleName || item.roleName || '';
+    const level = runtime.level !== '' ? runtime.level : (item.level || '');
+    const mapName = runtime.mapName || item.mapName || '';
+    const serverName = runtime.serverName || item.serverName || '';
+    const chatScene = runtime.chatScene || item.chatScene || '';
+
+    const canPersistRuntime = ownership.ownedByCurrentInstance || !ownership.ownerInstanceId || !ownership.ownerActive;
+    if (canPersistRuntime && (runtime.roleName || runtime.level !== '' || runtime.mapName || runtime.serverName || runtime.chatScene)) {
+      const snapshotUpdate = {};
+      if (roleName && roleName !== item.roleName) snapshotUpdate.roleName = roleName;
+      if (level !== '' && level !== item.level) snapshotUpdate.level = level;
+      if (mapName && mapName !== item.mapName) snapshotUpdate.mapName = mapName;
+      if (serverName && serverName !== item.serverName) snapshotUpdate.serverName = serverName;
+      if (chatScene && chatScene !== item.chatScene) snapshotUpdate.chatScene = chatScene;
+      if (Object.keys(snapshotUpdate).length) {
+        persistUpdates.push(Object.assign({ account: item.account }, snapshotUpdate));
+      }
     }
-  })
-  writeUserData(data)
-  res.json({ 'userDatas':data });
+
+    if (status === undefined) {
+      return Object.assign({}, item, ownership, {
+        aaa: '不存在该连接',
+        gs: '不存在该连接',
+        roleName: roleName,
+        level: level,
+        mapName: mapName,
+        serverName: serverName,
+        chatScene: chatScene
+      });
+    }
+    return Object.assign({}, item, ownership, {
+      aaa: status.aaa,
+      gs: status.gs,
+      roleName: roleName,
+      level: level,
+      mapName: mapName,
+      serverName: serverName,
+      chatScene: chatScene
+    });
+  });
+  if (persistUpdates.length) {
+    upsertUserDatas(persistUpdates);
+  }
+  res.json({
+    userDatas: next,
+    instance: {
+      id: INSTANCE_INFO.id,
+      label: INSTANCE_INFO.label,
+      leaseMs: INSTANCE_LEASE_MS,
+      heartbeatMs: INSTANCE_HEARTBEAT_MS
+    }
+  });
 });
 //创建并登录所有账号
 app.post('/api/createLoginAllClinetNum', (req, res) => {
@@ -1168,28 +1730,199 @@ app.get('/api/createLoginAllClinetNum', (req, res) => {
 //创建并登录单个账号
 app.post('/api/createLoginClinet',(req, res)=>{
   const requestData = req.body;
-  console.log(requestData.account)
-  createLoginClinet(requestData.account)
-  res.json({  });
+  const result = createLoginClinet(requestData.account)
+  res.json({
+    success: result.accounts.length > 0,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  });
 })
 app.get('/api/createLoginClinet',(req, res)=>{
   const account = req.query.account;
-  createLoginClinet(account);
-  res.json({ success: true, account });
+  const result = createLoginClinet(account);
+  res.json({
+    success: result.accounts.length > 0,
+    account,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  });
 })
 //登录列表中的所有账号
 app.post('/api/loginListClient', async (req, res) => {
   const requestData = req.body;
-  console.log(requestData.list)
-  await loginListClient(requestData.list);
-  res.join({})
+  const result = await loginListClient(requestData.list);
+  res.json({
+    success: true,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  })
 })
 //退出指定账号
 app.post('/api/logoutSingleAccount',async (req, res)=>{
   const requestData = req.body;
-  const ok = await logoutSingleAccount(requestData.account)
-  res.json({ 'success': ok });
+  const result = await logoutAccounts([requestData.account])
+  res.json({
+    success: result.accounts.length > 0,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  });
 })
+app.post('/api/accounts/generate', (req, res) => {
+  const result = createBatchUserRecords(req.body || {});
+  res.json({
+    success: result.message === 'ok' || result.message === 'partial_conflict',
+    created: result.created,
+    conflicts: result.conflicts,
+    loginResult: result.loginResult,
+    message: result.message === 'partial_conflict'
+      ? `已写入 ${result.created.length} 个账号，${result.conflicts.length} 个账号被其他实例占用。`
+      : `已写入 ${result.created.length} 个账号。`
+  });
+});
+app.post('/api/accounts/import', (req, res) => {
+  const result = importUserAccounts(req.body || {});
+  res.json({
+    success: result.message === 'ok' || result.message === 'partial_conflict',
+    created: result.created,
+    conflicts: result.conflicts,
+    loginResult: result.loginResult,
+    message: result.message === 'partial_conflict'
+      ? `已导入 ${result.created.length} 个账号，${result.conflicts.length} 个账号被其他实例占用。`
+      : `已导入 ${result.created.length} 个账号。`
+  });
+});
+app.post('/api/accounts/delete', (req, res) => {
+  const accounts = (req.body && req.body.accounts) || [];
+  const claimResult = claimAccountsForCurrentInstance(accounts);
+  claimResult.claimed.forEach(account => {
+    logoutSingleAccount(account);
+    delete clients[account];
+  });
+  const removedResult = removeOwnedUserAccounts(claimResult.claimed, INSTANCE_INFO.id);
+  res.json({
+    success: true,
+    accounts: removedResult.removed,
+    conflicts: claimResult.conflicts.concat(removedResult.conflicts),
+    skipped: [],
+    message: buildActionMessage('已删除', removedResult.removed.length, claimResult.conflicts.concat(removedResult.conflicts), 0),
+    userDatas: removedResult.userDatas
+  });
+});
+app.post('/api/accounts/login', (req, res) => {
+  const accounts = (req.body && req.body.accounts) || [];
+  const result = loginAccounts(accounts);
+  res.json({
+    success: true,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  });
+});
+app.post('/api/accounts/logout', (req, res) => {
+  const accounts = (req.body && req.body.accounts) || [];
+  const result = logoutAccounts(accounts);
+  res.json({
+    success: true,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  });
+});
+app.post('/api/accounts/prepare-finished', (req, res) => {
+  const accounts = (req.body && req.body.accounts) || [];
+  const result = prepareFinishedAccounts(accounts);
+  res.json({
+    success: true,
+    result: result.result,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  });
+});
+app.post('/api/accounts/xiangyao', (req, res) => {
+  const accounts = (req.body && req.body.accounts) || [];
+  const result = runXiangyaoAccounts(accounts);
+  res.json({
+    success: true,
+    accounts: result.accounts,
+    conflicts: result.conflicts,
+    skipped: result.skipped,
+    message: result.message
+  });
+});
+app.get('/api/chat-corpus', (req, res) => {
+  res.json({
+    success: true,
+    corpus: chatCorpus.getCorpus(),
+    summary: chatCorpus.getSummary()
+  });
+});
+app.get('/api/chat-corpus/runtime', (req, res) => {
+  res.json({
+    success: true,
+    corpus: chatCorpus.getActiveCorpus(),
+    summary: chatCorpus.getSummary()
+  });
+});
+app.post('/api/chat-corpus/runtime/refresh', (req, res) => {
+  const next = chatCorpus.refreshActiveCorpus();
+  res.json({
+    success: true,
+    corpus: next.corpus,
+    summary: next.summary
+  });
+});
+app.post('/api/chat-corpus', (req, res) => {
+  try {
+    const next = chatCorpus.saveCorpus((req.body && req.body.corpus) || {});
+    res.json({
+      success: true,
+      corpus: next,
+      summary: chatCorpus.getSummary()
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message || 'save_failed' });
+  }
+});
+app.post('/api/chat-corpus/category', (req, res) => {
+  try {
+    const body = req.body || {};
+    const next = chatCorpus.upsertCategory(body.key, body.content);
+    res.json({
+      success: true,
+      corpus: next,
+      summary: chatCorpus.getSummary()
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message || 'save_failed' });
+  }
+});
+app.post('/api/chat-corpus/category/delete', (req, res) => {
+  try {
+    const body = req.body || {};
+    const next = chatCorpus.removeCategory(body.key);
+    res.json({
+      success: true,
+      corpus: next,
+      summary: chatCorpus.getSummary()
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message || 'delete_failed' });
+  }
+});
+app.get('/api/chat-corpus/summary', (req, res) => {
+  res.json(chatCorpus.getSummary());
+});
 //获取配置信息
 app.get('/api/getConfig',(req, res)=>{
   const data = getConfigAll()
@@ -1198,17 +1931,48 @@ app.get('/api/getConfig',(req, res)=>{
 //更新配置信息
 app.post('/api/updateConfig',(req, res)=>{
   const requestData = req.body;
-  // console.log(requestData);
-  setConfig(requestData.field,requestData.value)
-  res.json({});
+  let value = requestData.value;
+
+  if (requestData.field === 'instance_lock_enabled') {
+    value = value === true || value === 1 || value === '1' || value === 'true' ? 1 : 0;
+  }
+
+  setConfig(requestData.field, value)
+
+  if (requestData.field === 'instance_lock_enabled') {
+    try {
+      if (Number(value) === 1) {
+        renewCurrentInstanceOwnership();
+      } else {
+        releaseCurrentInstanceOwnership();
+      }
+    } catch (error) {
+      console.log('toggle instance lock error', error);
+    }
+  }
+
+  res.json({ success: true, field: requestData.field, value });
 })
 // 启动服务器
 app.listen(port, () => {
+  startOwnershipHeartbeat();
+  console.log(`实例归属锁：${INSTANCE_INFO.label}，租约 ${INSTANCE_LEASE_MS}ms，心跳 ${INSTANCE_HEARTBEAT_MS}ms`);
   console.log(`访问路径： http://localhost:${port}/home`);
 });
 
 process.on("uncaughtException", function(error) {
   console.log("error %s: %s\n%s", error.name, error.message, error.stack);
+});
+
+['SIGINT', 'SIGTERM'].forEach(signal => {
+  process.on(signal, () => {
+    try {
+      releaseCurrentInstanceOwnership();
+    } catch (error) {
+      console.log(`release ownership on ${signal} error`, error);
+    }
+    process.exit(0);
+  });
 });
 
 if (process.env.DISABLE_REPL !== "1") {
