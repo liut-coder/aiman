@@ -17,6 +17,117 @@ need_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+is_debian_system() {
+  if [ ! -r /etc/os-release ]; then
+    return 1
+  fi
+
+  # shellcheck disable=SC1091
+  . /etc/os-release
+  [ "${ID:-}" = "debian" ]
+}
+
+detect_debian_codename() {
+  if [ ! -r /etc/os-release ]; then
+    return 1
+  fi
+
+  # shellcheck disable=SC1091
+  . /etc/os-release
+
+  if [ -n "${VERSION_CODENAME:-}" ]; then
+    printf '%s\n' "${VERSION_CODENAME}"
+    return
+  fi
+
+  case "${VERSION_ID:-}" in
+    9) printf '%s\n' "stretch" ;;
+    10) printf '%s\n' "buster" ;;
+    11) printf '%s\n' "bullseye" ;;
+    12) printf '%s\n' "bookworm" ;;
+    13) printf '%s\n' "trixie" ;;
+    *) return 1 ;;
+  esac
+}
+
+backup_apt_sources_once() {
+  if [ -e /etc/apt/sources.list ] && [ ! -e /etc/apt/sources.list.aiman.bak ]; then
+    ${SUDO} cp /etc/apt/sources.list /etc/apt/sources.list.aiman.bak
+  fi
+}
+
+disable_conflicting_debian_source_files() {
+  if [ ! -d /etc/apt/sources.list.d ]; then
+    return
+  fi
+
+  for file in /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+    if [ ! -f "${file}" ]; then
+      continue
+    fi
+
+    if grep -Eq 'deb\.debian\.org|security\.debian\.org|archive\.debian\.org|debian-security' "${file}"; then
+      ${SUDO} mv "${file}" "${file}.disabled-by-aiman"
+    fi
+  done
+}
+
+write_debian_sources() {
+  codename="$1"
+
+  backup_apt_sources_once
+  disable_conflicting_debian_source_files
+
+  case "${codename}" in
+    stretch|buster)
+      cat <<EOF | ${SUDO} tee /etc/apt/sources.list >/dev/null
+deb http://archive.debian.org/debian ${codename} main contrib non-free
+deb http://archive.debian.org/debian-security ${codename}/updates main contrib non-free
+EOF
+      cat <<'EOF' | ${SUDO} tee /etc/apt/apt.conf.d/99aiman-archive >/dev/null
+Acquire::Check-Valid-Until "false";
+EOF
+      ;;
+    bullseye)
+      cat <<EOF | ${SUDO} tee /etc/apt/sources.list >/dev/null
+deb http://deb.debian.org/debian ${codename} main contrib non-free
+deb http://deb.debian.org/debian ${codename}-updates main contrib non-free
+deb http://deb.debian.org/debian-security ${codename}-security main contrib non-free
+EOF
+      ${SUDO} rm -f /etc/apt/apt.conf.d/99aiman-archive
+      ;;
+    bookworm|trixie)
+      cat <<EOF | ${SUDO} tee /etc/apt/sources.list >/dev/null
+deb http://deb.debian.org/debian ${codename} main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian ${codename}-updates main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian-security ${codename}-security main contrib non-free non-free-firmware
+EOF
+      ${SUDO} rm -f /etc/apt/apt.conf.d/99aiman-archive
+      ;;
+    *)
+      echo "Unsupported Debian codename: ${codename}" >&2
+      return 1
+      ;;
+  esac
+}
+
+run_apt_update() {
+  if ! need_cmd apt-get; then
+    echo "apt-get 不可用，无法自动安装依赖。" >&2
+    exit 1
+  fi
+
+  if is_debian_system; then
+    codename="$(detect_debian_codename || true)"
+    if [ -n "${codename}" ]; then
+      echo "Normalizing Debian apt sources for ${codename}"
+      write_debian_sources "${codename}"
+    fi
+  fi
+
+  ${SUDO} apt-get update
+}
+
 ensure_base_packages() {
   if need_cmd curl && need_cmd tar; then
     return
@@ -27,7 +138,7 @@ ensure_base_packages() {
     exit 1
   fi
 
-  ${SUDO} apt-get update
+  run_apt_update
   ${SUDO} apt-get install -y curl tar ca-certificates
 }
 
@@ -41,7 +152,7 @@ ensure_docker_stack() {
     exit 1
   fi
 
-  ${SUDO} apt-get update
+  run_apt_update
   ${SUDO} apt-get install -y docker.io docker-compose || ${SUDO} apt-get install -y docker.io
 
   if need_cmd systemctl; then
