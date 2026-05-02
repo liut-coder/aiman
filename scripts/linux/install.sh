@@ -160,9 +160,15 @@ ensure_supported_docker_debian() {
   esac
 }
 
+ensure_docker_repo_prerequisites() {
+  run_apt_update
+  ${SUDO} apt-get install -y ca-certificates curl gnupg lsb-release
+}
+
 install_docker_from_official_repo() {
   codename="$1"
 
+  ensure_docker_repo_prerequisites
   ${SUDO} mkdir -p /etc/apt/keyrings
   curl -fsSL https://download.docker.com/linux/debian/gpg | ${SUDO} gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   ${SUDO} chmod a+r /etc/apt/keyrings/docker.gpg
