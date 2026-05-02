@@ -1077,7 +1077,7 @@ if (cfg.debugWsConnect) {
 
 const express = require('express');
 const app = express();
-const port = cfg.http_port;
+const port = Number(process.env.HTTP_PORT || cfg.http_port);
 
 // 设置模板引擎为 EJS
 app.set('view engine', 'ejs');
@@ -1160,12 +1160,22 @@ app.post('/api/createLoginAllClinetNum', (req, res) => {
   createLoginAllClinetNum(Number(requestData.value));//创建并登录
   res.json({});
 });
+app.get('/api/createLoginAllClinetNum', (req, res) => {
+  const value = Number(req.query.value || 0);
+  createLoginAllClinetNum(value);
+  res.json({ success: true, value });
+});
 //创建并登录单个账号
 app.post('/api/createLoginClinet',(req, res)=>{
   const requestData = req.body;
   console.log(requestData.account)
   createLoginClinet(requestData.account)
   res.json({  });
+})
+app.get('/api/createLoginClinet',(req, res)=>{
+  const account = req.query.account;
+  createLoginClinet(account);
+  res.json({ success: true, account });
 })
 //登录列表中的所有账号
 app.post('/api/loginListClient', async (req, res) => {
@@ -1201,8 +1211,10 @@ process.on("uncaughtException", function(error) {
   console.log("error %s: %s\n%s", error.name, error.message, error.stack);
 });
 
-repl.start({
-  prompt: "> ",
-  input: process.stdin,
-  output: process.stdout
-});
+if (process.env.DISABLE_REPL !== "1") {
+  repl.start({
+    prompt: "> ",
+    input: process.stdin,
+    output: process.stdout
+  });
+}

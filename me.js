@@ -2490,6 +2490,15 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+function getWorldTeamKeywords() {
+  var worldTeam = getConfig('world_Team') || cfg.world_Team || '';
+  return worldTeam.split(/[，,]/).map(function(element) {
+    return element.trim();
+  }).filter(function(element) {
+    return element.length > 0;
+  });
+}
 // 收到聊天消息
 Me.prototype.onMessageEx = function(msg, msgData) {
   if (msgData.msg == "testSendAndRecv") {
@@ -2519,43 +2528,62 @@ Me.prototype.onMessageEx = function(msg, msgData) {
     return;
   }
 
-  var worldTeam = getConfig('world_Team') || cfg.world_Team || '';
-  var arr = worldTeam.split(/[，,]/).map(function(element) {
-    return element.trim();
-  }).filter(function(element) {
-    return element.length > 0;
-  });
-
-  var flag = arr.some(function(element) {
+  var arr = getWorldTeamKeywords();
+  var matchedKeywords = arr.filter(function(element) {
     return msgData.msg.includes(element)
   });
-//this.me.data.level
 
-  if (flag) {
+  if (!matchedKeywords.length) {
+    return;
+  }
+
+  if (cfg.debugOn) {
+    console.log("[world team] matched(" + matchedKeywords.join("|") + ") " + msgData.name + ": " + msgData.msg);
+  }
+
+  var requestCount = 0;
+  var skipSelfCount = 0;
+  var skipLowLevelCount = 0;
+  var skipRandomCount = 0;
+
+  for (var key in clients) {
+    var client =clients[key];
+    if(client.me.data.id == msgData.id){
+      skipSelfCount++;
+      continue;
+    }
+
+    if(client.me.data.level < 70){
+      skipLowLevelCount++;
+      continue;
+    }
+
+    //随机
+    var random =  getRandomInt(1,20);
+    //总数20，挑 10个
+    //2分之1的 概率申请
+    if(random > 10){
+      skipRandomCount++;
+      continue;
+    }
+
+    requestCount++;
     if (cfg.debugOn) {
-      console.log("[world team] " + msgData.name + ": " + msgData.msg);
+      console.log("[world team] request_join " + client.me.data.name + " -> " + msgData.name);
     }
+    client.me.sendCmd("CMD_REQUEST_JOIN", {
+      peer_name: msgData.name,
+      id: msgData.id,
+      ask_type: "request_join"
+    });
+  }
 
-    for (var key in clients) {
-      var client =clients[key];
-      if(client.me.data.id != msgData.id && client.me.data.level >=70){
-        //随机
-        var random =  getRandomInt(1,20);
-        //总数20，挑 10个
-        //2分之1的 概率申请
-        if(random <= 10){
-          if (cfg.debugOn) {
-            console.log("[world team] request_join " + client.me.data.name + " -> " + msgData.name);
-          }
-          client.me.sendCmd("CMD_REQUEST_JOIN", {
-            peer_name: msgData.name,
-            id: msgData.id,
-            ask_type: "request_join"
-          });
-        }
-
-      }
-    }
+  if (cfg.debugOn) {
+    console.log("[world team] summary speaker=" + msgData.name +
+      " sent=" + requestCount +
+      " skipSelf=" + skipSelfCount +
+      " skipLowLevel=" + skipLowLevelCount +
+      " skipRandom=" + skipRandomCount);
   }
 };
 

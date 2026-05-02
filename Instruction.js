@@ -74,7 +74,7 @@ Instruction.prototype.setType = function(type) {
 
     this.type           = type;
     this.typeCount      = 0;
-    type.typeLastTime   = os.uptime();
+    this.typeLastTime   = os.uptime();
 
     if (this.me.con) {
         // 开启驱魔香
@@ -120,6 +120,9 @@ Instruction.prototype.onInterval3 = function() {
             }
             var randomHan = getRandomInt(1, rondom.length);
             var msg = rondom[randomHan-1].trim();
+            if (cfg.debugOn) {
+                console.log("[world chat] send " + this.me.data.name + ": " + msg);
+            }
             // 发起喊话
             this.me.sendTellEx(2,msg);
         }
