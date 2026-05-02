@@ -3,42 +3,103 @@
     "account": "110001A0001",
     "index": 1,
     "aaa": "未连接",
-    "gs": "未连接"
+    "gs": "未连接",
+    "chatScene": "shimen",
+    "roleName": "厍离晴翱翔",
+    "mapName": "金光洞",
+    "level": 74
   },
   {
     "account": "110001A0002",
     "index": 2,
     "aaa": "未连接",
-    "gs": "连接"
+    "gs": "连接",
+    "chatScene": "xiangyao",
+    "roleName": "麻露露",
+    "mapName": "帮派总坛",
+    "level": 74
   },
   {
     "account": "110001B0001",
     "index": 1,
     "aaa": "未连接",
-    "gs": "连接"
+    "gs": "连接",
+    "chatScene": "xiangyao",
+    "roleName": "殴悠悠",
+    "mapName": "帮派总坛",
+    "level": 74
   },
   {
     "account": "110001A0003",
     "index": 3,
     "aaa": "未连接",
-    "gs": "连接"
+    "gs": "连接",
+    "chatScene": "bangpai",
+    "roleName": "兆爵士",
+    "mapName": "白骨洞",
+    "level": 74
   },
   {
     "account": "110001C0004",
     "index": 4,
     "aaa": "未连接",
-    "gs": "连接"
+    "gs": "连接",
+    "chatScene": "xiangyao",
+    "roleName": "萧琪花朵",
+    "mapName": "天墉城",
+    "level": 74
   },
   {
     "account": "110001C0005",
     "index": 5,
     "aaa": "未连接",
-    "gs": "连接"
+    "gs": "连接",
+    "chatScene": "bangpai",
+    "roleName": "封緈福",
+    "mapName": "天墉城",
+    "level": 74
   },
   {
     "account": "110001C0006",
     "index": 6,
     "aaa": "未连接",
-    "gs": "连接"
+    "gs": "连接",
+    "chatScene": "xiangyao",
+    "roleName": "假面花朵",
+    "mapName": "白骨洞",
+    "level": 74
+  },
+  {
+    "account": "110001S0001",
+    "index": 1,
+    "aaa": "未连接",
+    "gs": "未连接",
+    "source": "batch_generate",
+    "chatScene": "chubao",
+    "roleName": "爱池王子",
+    "mapName": "轩辕坟二层",
+    "level": 74
+  },
+  {
+    "account": "110001S0002",
+    "index": 2,
+    "aaa": "未连接",
+    "gs": "未连接",
+    "source": "batch_generate",
+    "chatScene": "chubao",
+    "roleName": "步珑可可",
+    "mapName": "轩辕庙",
+    "level": 74
+  },
+  {
+    "account": "110001S0003",
+    "index": 3,
+    "aaa": "未连接",
+    "gs": "未连接",
+    "source": "batch_generate",
+    "chatScene": "zhuxian",
+    "roleName": "苗帥零丁",
+    "mapName": "白骨洞",
+    "level": 40
   }
 ]
