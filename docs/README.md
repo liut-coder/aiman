@@ -11,3 +11,11 @@
 
 - Windows 本地：`scripts/local/`
 - Linux 运维：`scripts/linux/`
+
+一键部署：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/liut-coder/aiman/debian-docker/scripts/linux/install.sh | bash
+```
+
+更多部署细节见 [02-startup-and-deploy.md](./02-startup-and-deploy.md)。

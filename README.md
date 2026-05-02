@@ -17,6 +17,22 @@
 - Windows 本地脚本：`scripts/local/`
 - Linux 运维脚本：`scripts/linux/`
 
+## 一键部署
+
+Debian 服务器可直接执行：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/liut-coder/aiman/debian-docker/scripts/linux/install.sh | bash
+```
+
+自定义安装目录：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/liut-coder/aiman/debian-docker/scripts/linux/install.sh | TARGET_DIR=/srv/aiman bash
+```
+
+详细说明见 [docs/02-startup-and-deploy.md](./docs/02-startup-and-deploy.md)。
+
 ## 推荐阅读顺序
 
 1. 先看 `01-overview-and-init`
