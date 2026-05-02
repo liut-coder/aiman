@@ -5,7 +5,7 @@ REPO_OWNER="${REPO_OWNER:-liut-coder}"
 REPO_NAME="${REPO_NAME:-aiman}"
 BRANCH="${BRANCH:-debian-docker}"
 TARGET_DIR="${TARGET_DIR:-/opt/aiman}"
-ARCHIVE_URL="https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/heads/${BRANCH}"
+ARCHIVE_URL="https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/${BRANCH}"
 
 if [ "${EUID:-$(id -u)}" -ne 0 ]; then
   SUDO="sudo"
