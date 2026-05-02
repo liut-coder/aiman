@@ -180,3 +180,107 @@ docker-compose up -d --build
 - `users_index_num = 4`
 - 缂栧彿 `1`
 
+---
+
+## 附录 A：项目内置脚本
+
+### Windows 本地脚本
+
+位置：
+
+- `scripts/local/start.ps1`
+- `scripts/local/stop.ps1`
+- `scripts/local/status.ps1`
+
+常用方式：
+
+```powershell
+npm run local:start
+npm run local:status
+npm run local:stop
+```
+
+直接指定端口：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\local\start.ps1 -Ports 3000,3001,3002,3003
+powershell -ExecutionPolicy Bypass -File .\scripts\local\status.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\local\stop.ps1
+```
+
+说明：
+
+1. 脚本会把实例状态写到 `.codex_tmp/local/instances/`
+2. 默认关闭 REPL，适合本地多实例调试
+3. 第一个实例如需保留 REPL，可加 `-PrimaryWithRepl`
+4. 端口被旧实例占用时，可加 `-Force`
+
+### Linux 运维脚本
+
+位置：
+
+- `scripts/linux/deploy.sh`
+- `scripts/linux/logs.sh`
+- `scripts/linux/status.sh`
+- `scripts/linux/restart.sh`
+- `scripts/linux/stop.sh`
+- `scripts/linux/update.sh`
+
+常用方式：
+
+```bash
+sh ./scripts/linux/deploy.sh
+sh ./scripts/linux/status.sh
+sh ./scripts/linux/logs.sh
+sh ./scripts/linux/restart.sh
+sh ./scripts/linux/stop.sh
+sh ./scripts/linux/update.sh
+```
+
+## 附录 B：Debian 最佳实践快速开始
+
+首次部署：
+
+```bash
+apt update && apt install -y git docker.io docker-compose
+git clone -b debian-docker https://github.com/liut-coder/aiman.git
+cd aiman
+sh ./scripts/linux/deploy.sh
+```
+
+日常查看：
+
+```bash
+cd aiman
+sh ./scripts/linux/status.sh
+sh ./scripts/linux/logs.sh
+```
+
+更新并重建：
+
+```bash
+cd aiman
+sh ./scripts/linux/update.sh
+```
+
+重启：
+
+```bash
+cd aiman
+sh ./scripts/linux/restart.sh
+```
+
+停止：
+
+```bash
+cd aiman
+sh ./scripts/linux/stop.sh
+```
+
+推荐习惯：
+
+1. 固定运行 `debian-docker` 分支
+2. 优先使用 `scripts/linux/*.sh`
+3. 保留 `config/`、`data/`、`log/`
+4. 每次更新后先看容器状态，再看日志
+
