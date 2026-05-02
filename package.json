@@ -5,6 +5,7 @@
     "local:start": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/local/start.ps1",
     "local:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/local/stop.ps1",
     "local:status": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/local/status.ps1",
+    "linux:install": "sh ./scripts/linux/install.sh",
     "linux:deploy": "sh ./scripts/linux/deploy.sh",
     "linux:logs": "sh ./scripts/linux/logs.sh",
     "linux:status": "sh ./scripts/linux/status.sh",

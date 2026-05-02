@@ -239,6 +239,26 @@ sh ./scripts/linux/update.sh
 
 ## 附录 B：Debian 最佳实践快速开始
 
+一键部署，不需要 `git clone`：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/liut-coder/aiman/debian-docker/scripts/linux/install.sh | bash
+```
+
+自定义安装目录：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/liut-coder/aiman/debian-docker/scripts/linux/install.sh | TARGET_DIR=/srv/aiman bash
+```
+
+说明：
+
+1. 脚本会直接下载 `debian-docker` 分支压缩包
+2. 默认安装到 `/opt/aiman`
+3. 会尽量保留已有的 `config/`、`data/`、`log/`
+4. 如果系统缺少 `curl`、`tar`、`docker`，会尝试自动安装
+5. 结束后会自动执行 `sh ./scripts/linux/deploy.sh`
+
 首次部署：
 
 ```bash
