@@ -3,6 +3,53 @@
 最后更新：2026-05-02
 维护人：Codex
 
+## 2026-05-02 Debian / Docker 适配记录
+
+### 已完成
+1. 新建 `debian-docker` 分支，用于隔离 Debian 容器化改造
+2. 完成首轮可行性评估，确认核心运行层可迁移到 Debian
+3. 新增 `Dockerfile`
+4. 新增 `docker-compose.yml`
+5. 新增 `docker/entrypoint.sh`
+6. 新增 `.dockerignore`
+7. 为 `package.json` 补充基础启动脚本
+8. 在 `README.md` 补充 Debian / Docker 启动与部署说明
+
+### 进行中
+1. 验证 Docker 构建与容器启动是否能在当前环境直接通过
+2. 观察 Debian 第一版是否还需要补充额外兼容项
+
+### 待完成
+1. 如有需要，补 Linux 版初始化脚本，替代 `init.bat`
+2. 视运行结果决定是否补充 `.gitignore`
+3. 视运行结果决定是否修复 `main.js` 中与 Docker 无关的历史接口问题
+
+---
+
+## 2026-05-02 文档拆分记录
+
+### 已完成
+1. 将根目录大体量 `README.md` 拆分为 `docs/` 分类文档
+2. 新建根目录精简导航版 `README.md`
+3. 新建 `docs/README.md` 文档目录
+4. 按主题拆分出 6 份文档：
+   `01-overview-and-init.md`
+   `02-startup-and-deploy.md`
+   `03-config-and-auth.md`
+   `04-features-and-logic.md`
+   `05-web-console-api.md`
+   `06-data-troubleshooting-and-maintenance.md`
+
+### 进行中
+1. 观察拆分后的文档结构是否还需要再细分
+2. 后续新增文档统一收口到 `docs/`
+
+### 待完成
+1. 如后续继续扩展 Docker / Debian 内容，可单独拆成独立文档
+2. 如 Web 操作手册继续膨胀，可再从 `05-web-console-api.md` 中拆出 `web-manual.md`
+
+---
+
 ## 1. 本轮工作范围
 
 本轮主要处理项目文档整理，不涉及业务代码逻辑调整。

@@ -1,0 +1,18 @@
+services:
+  aiman:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aiman
+    restart: unless-stopped
+    environment:
+      HTTP_PORT: "3000"
+      DISABLE_REPL: "1"
+      TZ: "Asia/Shanghai"
+      LANG: "C.UTF-8"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./log:/app/log
